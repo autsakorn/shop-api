@@ -10,7 +10,7 @@ import (
 	"github.com/astaxie/beego"
 )
 
-//  CategoryController operations for Category
+// CategoryController operations for Category
 type CategoryController struct {
 	beego.Controller
 }
