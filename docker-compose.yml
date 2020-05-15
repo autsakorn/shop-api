@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  api-shop:
+    build: .
+    ports:
+      - 8080:8080
+    networks:
+      - api-shop
+    command: bee run -downdoc=true -gendoc=true
+    volumes:
+      - .:/go/src/shop-api/
+    depends_on: 
+      - db-shop
+  db-shop:
+    image: postgres:12
+    volumes:
+      - 'db-shop:/var/lib/postgresql/data/pgdata'
+    ports:
+      - '5432:5432'
+    environment:
+      PGDATA: '/var/lib/postgresql/data/pgdata'
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'pass'
+      POSTGRES_DB: 'db'
+    networks:
+      api-shop:
+volumes:
+  db-shop:
+networks:
+  api-shop:
