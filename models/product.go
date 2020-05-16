@@ -5,47 +5,55 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/astaxie/beego/orm"
 )
 
-// Category defines strcuture
-type Category struct {
-	ID     int64  `orm:"column(id);auto"`
-	Name   string `orm:"column(name);size(128)"`
-	Detail string `orm:"column(detail);type(longtext)"`
+// Product defines structure
+type Product struct {
+	ID        int64     `orm:"column(id);auto"`
+	Name      string    `orm:"column(name);size(255)"`
+	Detail    string    `orm:"column(detail);type(longtext)"`
+	Brand     string    `orm:"column(brand);size(100)"`
+	Model     string    `orm:"column(model);size(255)"`
+	CreatedAt time.Time `orm:"column(created_at);type(datetime)"`
+	UpdatedAt time.Time `orm:"column(updated_at);type(datetime)"`
+	Quantity  int       `orm:"column(quantity)"`
+	Price     float64   `orm:"column(price)"`
+	Cost      float64   `orm:"column(cost)"`
+	Category  *Category `orm:"rel(fk)"`
 }
 
 func init() {
-	fmt.Println("init category")
-	orm.RegisterModel(new(Category))
+	orm.RegisterModel(new(Product))
 }
 
-// AddCategory insert a new Category into database and returns
+// AddProduct insert a new Product into database and returns
 // last inserted Id on success.
-func AddCategory(m *Category) (id int64, err error) {
+func AddProduct(m *Product) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetCategoryByID retrieves Category by Id. Returns error if
+// GetProductByID retrieves Product by Id. Returns error if
 // Id doesn't exist
-func GetCategoryByID(id int64) (v *Category, err error) {
+func GetProductByID(id int64) (v *Product, err error) {
 	o := orm.NewOrm()
-	v = &Category{ID: id}
-	if err = o.QueryTable(new(Category)).Filter("Id", id).RelatedSel().One(v); err == nil {
+	v = &Product{ID: id}
+	if err = o.QueryTable(new(Product)).Filter("id", id).RelatedSel().One(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllCategory retrieves all Category matches certain condition. Returns empty list if
+// GetAllProduct retrieves all Product matches certain condition. Returns empty list if
 // no records exist
-func GetAllCategory(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllProduct(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(Category))
+	qs := o.QueryTable(new(Product))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -91,8 +99,9 @@ func GetAllCategory(query map[string]string, fields []string, sortby []string, o
 		}
 	}
 
-	var l []Category
+	var l []Product
 	qs = qs.OrderBy(sortFields...).RelatedSel()
+	fmt.Println("fieldsfieldsfields", fields)
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {
 			for _, v := range l {
@@ -104,7 +113,7 @@ func GetAllCategory(query map[string]string, fields []string, sortby []string, o
 				m := make(map[string]interface{})
 				val := reflect.ValueOf(v)
 				for _, fname := range fields {
-					m[fname] = val.FieldByName(fname).Interface()
+					m[strings.Title(fname)] = val.FieldByName(strings.Title(fname)).Interface()
 				}
 				ml = append(ml, m)
 			}
@@ -114,11 +123,11 @@ func GetAllCategory(query map[string]string, fields []string, sortby []string, o
 	return nil, err
 }
 
-// UpdateCategoryByID updates Category by Id and returns error if
+// UpdateProductByID updates Product by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateCategoryByID(m *Category) (err error) {
+func UpdateProductByID(m *Product) (err error) {
 	o := orm.NewOrm()
-	v := Category{ID: m.ID}
+	v := Product{ID: m.ID}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -129,15 +138,15 @@ func UpdateCategoryByID(m *Category) (err error) {
 	return
 }
 
-// DeleteCategory deletes Category by Id and returns error if
+// DeleteProduct deletes Product by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteCategory(id int64) (err error) {
+func DeleteProduct(id int64) (err error) {
 	o := orm.NewOrm()
-	v := Category{ID: id}
+	v := Product{ID: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Category{ID: id}); err == nil {
+		if num, err = o.Delete(&Product{ID: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}

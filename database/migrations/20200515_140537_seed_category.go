@@ -30,13 +30,9 @@ type category = struct {
 // Up Run the migrations
 func (m *SeedCategory_20200515_140537) Up() {
 	jsonFile, err := os.Open("../../fixtures/category.json")
-	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	fmt.Println("Successfully Opened category.json")
-	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
@@ -53,13 +49,9 @@ func (m *SeedCategory_20200515_140537) Up() {
 // Down Reverse the migrations
 func (m *SeedCategory_20200515_140537) Down() {
 	jsonFile, err := os.Open("../../fixtures/category.json")
-	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	fmt.Println("Successfully Opened category.json")
-	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
@@ -70,4 +62,5 @@ func (m *SeedCategory_20200515_140537) Down() {
 		sql := fmt.Sprintf("DELETE FROM category WHERE name = '%s'", strings.Replace(value.Name, "'", "''", -1))
 		m.SQL(sql)
 	}
+	m.SQL("DELETE FROM migrations WHERE name = 'SeedCategory_20200515_140537'")
 }

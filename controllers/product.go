@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"shop-api/models"
 	"strconv"
 	"strings"
@@ -10,13 +11,13 @@ import (
 	"github.com/astaxie/beego"
 )
 
-// CategoryController operations for Category
-type CategoryController struct {
+//  ProductController operations for Product
+type ProductController struct {
 	beego.Controller
 }
 
 // URLMapping ...
-func (c *CategoryController) URLMapping() {
+func (c *ProductController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
@@ -26,15 +27,16 @@ func (c *CategoryController) URLMapping() {
 
 // Post ...
 // @Title Post
-// @Description create Category
-// @Param	body		body 	models.Category	true		"body for Category content"
-// @Success 201 {int} models.Category
+// @Description create Product
+// @Param	body		body 	models.Product	true		"body for Product content"
+// @Success 201 {int} models.Product
 // @Failure 403 body is empty
 // @router / [post]
-func (c *CategoryController) Post() {
-	var v models.Category
+func (c *ProductController) Post() {
+	var v models.Product
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if _, err := models.AddCategory(&v); err == nil {
+	fmt.Println(v.CreatedAt)
+	if _, err := models.AddProduct(&v); err == nil {
 		c.Ctx.Output.SetStatus(201)
 		c.Data["json"] = v
 	} else {
@@ -45,15 +47,15 @@ func (c *CategoryController) Post() {
 
 // GetOne ...
 // @Title Get One
-// @Description get Category by id
+// @Description get Product by id
 // @Param	id		path 	string	true		"The key for staticblock"
-// @Success 200 {object} models.Category
+// @Success 200 {object} models.Product
 // @Failure 403 :id is empty
 // @router /:id [get]
-func (c *CategoryController) GetOne() {
+func (c *ProductController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetCategoryByID(id)
+	v, err := models.GetProductByID(id)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
@@ -64,17 +66,17 @@ func (c *CategoryController) GetOne() {
 
 // GetAll ...
 // @Title Get All
-// @Description get Category
+// @Description get Product
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
 // @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
 // @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
 // @Param	offset	query	string	false	"Start position of result set. Must be an integer"
-// @Success 200 {object} models.Category
+// @Success 200 {object} models.Product
 // @Failure 403
 // @router / [get]
-func (c *CategoryController) GetAll() {
+func (c *ProductController) GetAll() {
 	var fields []string
 	var sortby []string
 	var order []string
@@ -82,10 +84,13 @@ func (c *CategoryController) GetAll() {
 	var limit int64 = 10
 	var offset int64
 
+	// r, _ := models.GetWithCat()
+	// fmt.Println("r", r)
 	// fields: col1,col2,entity.col3
 	if v := c.GetString("fields"); v != "" {
 		fields = strings.Split(v, ",")
 	}
+	fmt.Println("fields", fields)
 	// limit: 10 (default is 10)
 	if v, err := c.GetInt64("limit"); err == nil {
 		limit = v
@@ -116,7 +121,7 @@ func (c *CategoryController) GetAll() {
 		}
 	}
 
-	l, err := models.GetAllCategory(query, fields, sortby, order, offset, limit)
+	l, err := models.GetAllProduct(query, fields, sortby, order, offset, limit)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
@@ -127,18 +132,18 @@ func (c *CategoryController) GetAll() {
 
 // Put ...
 // @Title Put
-// @Description update the Category
+// @Description update the Product
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	models.Category	true		"body for Category content"
-// @Success 200 {object} models.Category
+// @Param	body		body 	models.Product	true		"body for Product content"
+// @Success 200 {object} models.Product
 // @Failure 403 :id is not int
 // @router /:id [put]
-func (c *CategoryController) Put() {
+func (c *ProductController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v := models.Category{ID: id}
+	v := models.Product{ID: id}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if err := models.UpdateCategoryByID(&v); err == nil {
+	if err := models.UpdateProductByID(&v); err == nil {
 		c.Data["json"] = "OK"
 	} else {
 		c.Data["json"] = err.Error()
@@ -148,15 +153,15 @@ func (c *CategoryController) Put() {
 
 // Delete ...
 // @Title Delete
-// @Description delete the Category
+// @Description delete the Product
 // @Param	id		path 	string	true		"The id you want to delete"
 // @Success 200 {string} delete success!
 // @Failure 403 id is empty
 // @router /:id [delete]
-func (c *CategoryController) Delete() {
+func (c *ProductController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	if err := models.DeleteCategory(id); err == nil {
+	if err := models.DeleteProduct(id); err == nil {
 		c.Data["json"] = "OK"
 	} else {
 		c.Data["json"] = err.Error()
