@@ -27,4 +27,5 @@ func (m *Category_20200515_133557) Up() {
 func (m *Category_20200515_133557) Down() {
 	// use m.SQL("DROP TABLE ...") to reverse schema update
 	m.SQL("DROP TABLE category")
+	m.SQL("DELETE FROM migrations WHERE name = 'Category_20200515_133557'")
 }
