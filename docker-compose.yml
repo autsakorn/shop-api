@@ -1,10 +1,16 @@
 version: '3'
 
 services:
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - 8080:8080
+    networks:
+      - api-shop
   api-shop:
     build: .
     ports:
-      - 8080:8080
+      - 8081:8081
     networks:
       - api-shop
     command: bee run -downdoc=true -gendoc=true
@@ -12,6 +18,9 @@ services:
       - .:/go/src/shop-api/
     depends_on: 
       - db-shop
+    environment:
+      driver: postgres
+      sqlconn: postgres://user:pass@db-shop:5432/db?sslmode=disable
   db-shop:
     image: postgres:12
     volumes:

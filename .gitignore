@@ -11,8 +11,7 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-swagger/*
-
+coverage.html
 shop-api
 lastupdate.tmp
 # Dependency directories (remove the comment below to include it)
