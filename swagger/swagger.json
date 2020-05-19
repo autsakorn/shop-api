@@ -3,10 +3,13 @@
     "info": {
         "title": "Shop API",
         "description": "documents for Shop API",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "contact": {}
     },
     "basePath": "/v1",
+    "schemes": [
+        "http"
+    ],
     "paths": {
         "/category/": {
             "get": {
@@ -20,12 +23,6 @@
                         "in": "query",
                         "name": "query",
                         "description": "Filter. e.g. col1:v1,col2:v2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "fields",
-                        "description": "Fields returned. e.g. col1,col2 ...",
                         "type": "string"
                     },
                     {
@@ -57,11 +54,11 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/models.Category"
+                            "$ref": "#/definitions/types.OutputCategory"
                         }
                     },
                     "403": {
-                        "description": ""
+                        "description": "{string} string"
                     }
                 }
             },
@@ -84,7 +81,7 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "{int} models.Category"
+                        "description": "{int}"
                     },
                     "400": {
                         "description": "{int} Bad Request"
@@ -115,7 +112,7 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/models.Category"
+                            "$ref": "#/definitions/types.OutputCategory"
                         }
                     },
                     "403": {
@@ -200,12 +197,6 @@
                     },
                     {
                         "in": "query",
-                        "name": "fields",
-                        "description": "Fields returned. e.g. col1,col2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
                         "name": "sortby",
                         "description": "Sorted-by fields. e.g. col1,col2 ...",
                         "type": "string"
@@ -233,7 +224,7 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/models.Product"
+                            "$ref": "#/definitions/types.OutputProduct"
                         }
                     },
                     "403": {
@@ -260,7 +251,7 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": "{int} models.Product"
+                        "description": "{int}"
                     },
                     "403": {
                         "description": "body is empty"
@@ -288,7 +279,7 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/models.Product"
+                            "$ref": "#/definitions/types.OutputProduct"
                         }
                     },
                     "403": {
@@ -508,6 +499,62 @@
                 },
                 "detail": {
                     "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "types.OutputCategory": {
+            "title": "OutputCategory",
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.OutputProduct": {
+            "title": "OutputProduct",
+            "type": "object",
+            "properties": {
+                "Category": {
+                    "$ref": "#/definitions/types.OutputCategory"
+                },
+                "brand": {
+                    "type": "string"
+                },
+                "cost": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "model": {
                     "type": "string"

@@ -1,7 +1,9 @@
 // Package routers ...
-// @APIVersion 1.0.0
+// @APIVersion 1.0.1
 // @Title Shop API
 // @Description documents for Shop API
+// @Schemes http
+// @BasePath /v1
 package routers
 
 import (

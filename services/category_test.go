@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"shop-api/models"
 	"shop-api/storage"
@@ -47,6 +46,7 @@ func TestCategoryService_Add(t *testing.T) {
 		mockStatus       int32
 		mockResponse     mockResponse
 		wantResponseCode int
+		wantID           int64
 		wantErr          bool
 	}{
 		{
@@ -62,6 +62,7 @@ func TestCategoryService_Add(t *testing.T) {
 			1,
 			mockResponse{1, nil},
 			types.ResponseCode["CreatedSuccess"],
+			1,
 			false,
 		},
 		{
@@ -77,6 +78,7 @@ func TestCategoryService_Add(t *testing.T) {
 			-1,
 			mockResponse{1, nil},
 			types.ResponseCode["BadRequest"],
+			0,
 			true,
 		},
 		{
@@ -92,6 +94,7 @@ func TestCategoryService_Add(t *testing.T) {
 			0,
 			mockResponse{0, errors.New("Add Fail")},
 			types.ResponseCode["BadRequest"],
+			0,
 			true,
 		},
 	}
@@ -112,13 +115,16 @@ func TestCategoryService_Add(t *testing.T) {
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 			}
-			gotResponseCode, err := s.Add(tt.args.input)
+			gotResponseCode, gotID, err := s.Add(tt.args.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CategoryService.Add() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if gotResponseCode != tt.wantResponseCode {
-				t.Errorf("CategoryService.Add() = %v, want %v", gotResponseCode, tt.wantResponseCode)
+				t.Errorf("CategoryService.Add() gotResponseCode = %v, want %v", gotResponseCode, tt.wantResponseCode)
+			}
+			if gotID != tt.wantID {
+				t.Errorf("CategoryService.Add() gotID = %v, want %v", gotID, tt.wantID)
 			}
 		})
 	}
@@ -258,8 +264,6 @@ func TestCategoryService_GetAll(t *testing.T) {
 	}
 	type args struct {
 		query  map[string]string
-		fields []string
-		sortby []string
 		order  []string
 		offset int64
 		limit  int64
@@ -316,14 +320,14 @@ func TestCategoryService_GetAll(t *testing.T) {
 			defer ctrl.Finish()
 			mackCategory := mock.NewMockCategory(ctrl)
 			mackCategory.EXPECT().
-				GetAll(tt.args.query, tt.args.fields, tt.args.sortby, tt.args.order, tt.args.offset, tt.args.limit).
+				GetAll(tt.args.query, tt.args.order, tt.args.offset, tt.args.limit).
 				AnyTimes().
 				Return(tt.mockResponse.result, tt.mockResponse.err)
 			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 			}
-			gotResponseCode, gotResults, err := s.GetAll(tt.args.query, tt.args.fields, tt.args.sortby, tt.args.order, tt.args.offset, tt.args.limit)
+			gotResponseCode, gotResults, err := s.GetAll(tt.args.query, tt.args.order, tt.args.offset, tt.args.limit)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CategoryService.GetAll() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -331,8 +335,6 @@ func TestCategoryService_GetAll(t *testing.T) {
 			if gotResponseCode != tt.wantResponseCode {
 				t.Errorf("CategoryService.GetAll() gotResponseCode = %v, want %v", gotResponseCode, tt.wantResponseCode)
 			}
-			fmt.Println("gotResults", gotResults)
-			fmt.Println("tt.wantResults", tt.wantResults)
 			if !reflect.DeepEqual(gotResults, tt.wantResults) {
 				t.Errorf("CategoryService.GetAll() gotResults = %v, want %v", gotResults, tt.wantResults)
 			}

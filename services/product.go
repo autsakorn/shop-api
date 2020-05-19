@@ -6,6 +6,8 @@ import (
 	"shop-api/storage"
 	"shop-api/types"
 	"time"
+
+	"github.com/jinzhu/copier"
 )
 
 // Product defines action
@@ -43,8 +45,6 @@ func (ps ProductService) Add(product types.InputAddProduct) (responseCode int, i
 		Category: &models.Category{
 			ID: product.Category.ID,
 		},
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
 	id, err = ps.Storage.Product.Add(&inputModel)
 	if id > 0 {
@@ -70,16 +70,22 @@ func (ps ProductService) Delete(id int64) (responseCode int, err error) {
 }
 
 // GetByID ...
-func (ps ProductService) GetByID(id int64) (responseCode int, product models.Product, err error) {
-	product, err = ps.Storage.Product.GetByID(id)
+func (ps ProductService) GetByID(id int64) (responseCode int, result types.OutputProduct, err error) {
+	product, err := ps.Storage.Product.GetByID(id)
+	copier.Copy(&result, &product)
 	responseCode = types.ResponseCode["Success"]
 	return
 }
 
 // GetAll ...
-func (ps ProductService) GetAll(query map[string]string, fields []string, sortby []string, order []string,
-	offset int64, limit int64) (responseCode int, results []interface{}, err error) {
-	results, err = ps.Storage.Product.GetAll(query, fields, sortby, order, offset, limit)
+func (ps ProductService) GetAll(
+	query map[string]string,
+	order []string,
+	offset int64,
+	limit int64,
+) (responseCode int, results []types.OutputProduct, err error) {
+	products, err := ps.Storage.Product.GetAll(query, order, offset, limit)
+	copier.Copy(&results, &products)
 	responseCode = types.ResponseCode["Success"]
 	return
 }

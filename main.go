@@ -2,6 +2,7 @@ package main
 
 import (
 	"shop-api/controllers"
+	_ "shop-api/middleware"
 	_ "shop-api/routers"
 
 	"github.com/astaxie/beego"

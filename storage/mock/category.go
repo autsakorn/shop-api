@@ -64,18 +64,18 @@ func (mr *MockCategoryMockRecorder) Delete(input interface{}) *gomock.Call {
 }
 
 // GetAll mocks base method
-func (m *MockCategory) GetAll(query map[string]string, fields, sortby, order []string, offset, limit int64) ([]models.Category, error) {
+func (m *MockCategory) GetAll(query map[string]string, order []string, offset, limit int64) ([]models.Category, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAll", query, fields, sortby, order, offset, limit)
+	ret := m.ctrl.Call(m, "GetAll", query, order, offset, limit)
 	ret0, _ := ret[0].([]models.Category)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAll indicates an expected call of GetAll
-func (mr *MockCategoryMockRecorder) GetAll(query, fields, sortby, order, offset, limit interface{}) *gomock.Call {
+func (mr *MockCategoryMockRecorder) GetAll(query, order, offset, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockCategory)(nil).GetAll), query, fields, sortby, order, offset, limit)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockCategory)(nil).GetAll), query, order, offset, limit)
 }
 
 // GetByID mocks base method

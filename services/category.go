@@ -12,9 +12,9 @@ import (
 
 // Category defines interface
 type Category interface {
-	Add(input *types.InputAddCategory) (responseCode int, err error)
+	Add(input *types.InputAddCategory) (responseCode int, id int64, err error)
 	Delete(id int64) (responseCode int, err error)
-	GetAll(query map[string]string, fields []string, sortby []string, order []string,
+	GetAll(query map[string]string, order []string,
 		offset int64, limit int64) (responseCode int, results []types.OutputCategory, err error)
 	GetByID(id int64) (responseCode int, result types.OutputCategory, err error)
 	UpdateByID(id int64, category *types.InputUpdateCategory) (responseCode int, err error)
@@ -32,8 +32,8 @@ func NewCategoryService() (s CategoryService) {
 }
 
 // Add ...
-func (s CategoryService) Add(input *types.InputAddCategory) (responseCode int, err error) {
-	errorMessage := "Please enter valid status ['Active' Or 'Inactive']"
+func (s CategoryService) Add(input *types.InputAddCategory) (responseCode int, id int64, err error) {
+	errorMessage := "Please enter valid status, Must be either [Active|Inactive]"
 	responseCode = types.ResponseCode["BadRequest"]
 	var category = models.Category{}
 	// Map data input to model
@@ -45,7 +45,7 @@ func (s CategoryService) Add(input *types.InputAddCategory) (responseCode int, e
 	}
 	category.Status = indexStatus
 	// Execute method Add
-	id, err := s.Storage.Category.Add(&category)
+	id, err = s.Storage.Category.Add(&category)
 	if id > 0 {
 		responseCode = types.ResponseCode["CreatedSuccess"]
 		return
@@ -78,9 +78,9 @@ func (s CategoryService) GetByID(id int64) (responseCode int, result types.Outpu
 }
 
 // GetAll ...
-func (s CategoryService) GetAll(query map[string]string, fields []string, sortby []string, order []string,
+func (s CategoryService) GetAll(query map[string]string, order []string,
 	offset int64, limit int64) (responseCode int, results []types.OutputCategory, err error) {
-	categories, err := s.Storage.Category.GetAll(query, fields, sortby, order, offset, limit)
+	categories, err := s.Storage.Category.GetAll(query, order, offset, limit)
 	copier.Copy(&results, &categories)
 	responseCode = types.ResponseCode["Success"]
 	return
