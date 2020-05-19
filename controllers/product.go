@@ -37,8 +37,9 @@ func (c *ProductController) URLMapping() {
 func (c *ProductController) Post() {
 	var v types.InputAddProduct
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if id, err := c.ProductService.Add(v); err == nil {
-		c.Ctx.Output.SetStatus(201)
+	responseCode, id, err := c.ProductService.Add(v)
+	c.Ctx.Output.SetStatus(responseCode)
+	if err == nil {
 		c.Data["json"] = id
 	} else {
 		c.Data["json"] = err.Error()
@@ -56,11 +57,12 @@ func (c *ProductController) Post() {
 func (c *ProductController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := c.ProductService.GetByID(id)
+	responseCode, result, err := c.ProductService.GetByID(id)
+	c.Ctx.Output.SetStatus(responseCode)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
-		c.Data["json"] = v
+		c.Data["json"] = result
 	}
 	c.ServeJSON()
 }
@@ -122,11 +124,12 @@ func (c *ProductController) GetAll() {
 		}
 	}
 
-	l, err := c.ProductService.GetAll(query, fields, sortby, order, offset, limit)
+	responseCode, results, err := c.ProductService.GetAll(query, fields, sortby, order, offset, limit)
+	c.Ctx.Output.SetStatus(responseCode)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
-		c.Data["json"] = l
+		c.Data["json"] = results
 	}
 	c.ServeJSON()
 }
@@ -142,9 +145,11 @@ func (c *ProductController) GetAll() {
 func (c *ProductController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	var v types.InputUpdateProduct
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if err := c.ProductService.UpdateByID(id, &v); err == nil {
+	var input types.InputUpdateProduct
+	json.Unmarshal(c.Ctx.Input.RequestBody, &input)
+	responseCode, err := c.ProductService.UpdateByID(id, &input)
+	c.Ctx.Output.SetStatus(responseCode)
+	if err == nil {
 		c.Data["json"] = "OK"
 	} else {
 		c.Data["json"] = err.Error()
@@ -162,8 +167,9 @@ func (c *ProductController) Put() {
 func (c *ProductController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	if err := c.ProductService.Delete(id); err == nil {
-		c.Ctx.Output.SetStatus(201)
+	responseCdoe, err := c.ProductService.Delete(id)
+	c.Ctx.Output.SetStatus(responseCdoe)
+	if err == nil {
 		c.Data["json"] = id
 	} else {
 		c.Data["json"] = err.Error()

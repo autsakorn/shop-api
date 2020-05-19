@@ -1,12 +1,22 @@
 package services
 
 import (
-	"fmt"
+	"errors"
 	"shop-api/models"
 	"shop-api/storage"
 	"shop-api/types"
 	"time"
 )
+
+// Product defines action
+type Product interface {
+	Add(product types.InputAddProduct) (responseCode int, id int64, err error)
+	Delete(id int64) (responseCode int, err error)
+	GetByID(id int64) (responseCode int, product models.Product, err error)
+	GetAll(query map[string]string, fields []string, sortby []string, order []string,
+		offset int64, limit int64) (responseCode int, results []interface{}, err error)
+	UpdateByID(id int64, product *types.InputUpdateProduct) (responseCode int, err error)
+}
 
 // ProductService ...
 type ProductService struct {
@@ -20,8 +30,9 @@ func NewProductService() (ps ProductService) {
 }
 
 // Add ...
-func (ps ProductService) Add(product types.InputAddProduct) (id int64, err error) {
-	v := models.Product{
+func (ps ProductService) Add(product types.InputAddProduct) (responseCode int, id int64, err error) {
+	responseCode = types.ResponseCode["BadRequest"]
+	inputModel := models.Product{
 		Name:     product.Name,
 		Detail:   product.Detail,
 		Brand:    product.Brand,
@@ -35,37 +46,47 @@ func (ps ProductService) Add(product types.InputAddProduct) (id int64, err error
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	id, err = ps.Storage.Product.Add(&v)
+	id, err = ps.Storage.Product.Add(&inputModel)
+	if id > 0 {
+		responseCode = types.ResponseCode["CreatedSuccess"]
+		return
+	}
 	return
 }
 
 // Delete ...
-func (ps ProductService) Delete(id int64) (err error) {
+func (ps ProductService) Delete(id int64) (responseCode int, err error) {
+	responseCode = types.ResponseCode["Success"]
 	modelProduct := models.Product{
 		ID: id,
 	}
-	var num int64
-	num, err = ps.Storage.Product.Delete(&modelProduct)
-	fmt.Println("num", num)
+	num, err := ps.Storage.Product.Delete(&modelProduct)
+	if num < 1 {
+		errorMessage := "Not found"
+		err = errors.New(errorMessage)
+		responseCode = types.ResponseCode["BadRequest"]
+	}
 	return
 }
 
 // GetByID ...
-func (ps ProductService) GetByID(id int64) (product models.Product, err error) {
-	fmt.Println("id", id)
+func (ps ProductService) GetByID(id int64) (responseCode int, product models.Product, err error) {
 	product, err = ps.Storage.Product.GetByID(id)
+	responseCode = types.ResponseCode["Success"]
 	return
 }
 
 // GetAll ...
 func (ps ProductService) GetAll(query map[string]string, fields []string, sortby []string, order []string,
-	offset int64, limit int64) (ml []interface{}, err error) {
-	ml, err = ps.Storage.Product.GetAll(query, fields, sortby, order, offset, limit)
+	offset int64, limit int64) (responseCode int, results []interface{}, err error) {
+	results, err = ps.Storage.Product.GetAll(query, fields, sortby, order, offset, limit)
+	responseCode = types.ResponseCode["Success"]
 	return
 }
 
 // UpdateByID ...
-func (ps ProductService) UpdateByID(id int64, product *types.InputUpdateProduct) (err error) {
+func (ps ProductService) UpdateByID(id int64, product *types.InputUpdateProduct) (responseCode int, err error) {
+	responseCode = types.ResponseCode["Success"]
 	dataProduct, err := ps.Storage.Product.GetByID(id)
 	m := models.Product{
 		ID:        id,
@@ -82,6 +103,12 @@ func (ps ProductService) UpdateByID(id int64, product *types.InputUpdateProduct)
 			ID: product.Category.ID,
 		},
 	}
-	_, err = ps.Storage.Product.UpdateByID(&m)
+	num, err := ps.Storage.Product.UpdateByID(&m)
+	if num < 1 {
+		errorMessage := "Not found"
+		err = errors.New(errorMessage)
+		responseCode = types.ResponseCode["BadRequest"]
+		return
+	}
 	return
 }

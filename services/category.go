@@ -89,6 +89,7 @@ func (s CategoryService) GetAll(query map[string]string, fields []string, sortby
 // UpdateByID ...
 func (s CategoryService) UpdateByID(id int64, category *types.InputUpdateCategory) (responseCode int, err error) {
 	errorMessage := "Not found"
+	responseCode = types.ResponseCode["Success"]
 	m := models.Category{
 		ID:     id,
 		Name:   category.Name,
@@ -97,7 +98,7 @@ func (s CategoryService) UpdateByID(id int64, category *types.InputUpdateCategor
 	num, err := s.Storage.Category.UpdateByID(&m)
 	if num < 1 {
 		err = errors.New(errorMessage)
+		responseCode = types.ResponseCode["BadRequest"]
 	}
-	responseCode = types.ResponseCode["Success"]
 	return
 }

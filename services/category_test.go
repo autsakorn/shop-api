@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"shop-api/models"
 	"shop-api/storage"
@@ -36,8 +37,8 @@ func TestCategoryService_Add(t *testing.T) {
 		input *types.InputAddCategory
 	}
 	type mockResponse struct {
-		ID  int64
-		Err error
+		id  int64
+		err error
 	}
 	tests := []struct {
 		name             string
@@ -106,7 +107,7 @@ func TestCategoryService_Add(t *testing.T) {
 					Status: tt.mockStatus,
 				}).
 				AnyTimes().
-				Return(tt.mockResponse.ID, tt.mockResponse.Err)
+				Return(tt.mockResponse.id, tt.mockResponse.err)
 			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
@@ -131,8 +132,8 @@ func TestCategoryService_Delete(t *testing.T) {
 		id int64
 	}
 	type mockResponse struct {
-		Num int64
-		Err error
+		num int64
+		err error
 	}
 	tests := []struct {
 		name             string
@@ -169,7 +170,7 @@ func TestCategoryService_Delete(t *testing.T) {
 					ID: tt.args.id,
 				}).
 				AnyTimes().
-				Return(tt.mockResponse.Num, tt.mockResponse.Err)
+				Return(tt.mockResponse.num, tt.mockResponse.err)
 			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
@@ -193,18 +194,46 @@ func TestCategoryService_GetByID(t *testing.T) {
 	type args struct {
 		id int64
 	}
+	type mockResponse struct {
+		result models.Category
+		err    error
+	}
 	tests := []struct {
 		name             string
 		fields           fields
 		args             args
+		mockResponse     mockResponse
 		wantResponseCode int
 		wantResult       types.OutputCategory
 		wantErr          bool
 	}{
-		// TODO: Add test cases.
+		{
+			"Status Active",
+			fields{Storage: storage.Storage{}}, args{1},
+			mockResponse{models.Category{Name: "Name", Detail: "Detail", Status: 1}, nil},
+			types.ResponseCode["Success"],
+			types.OutputCategory{Name: "Name", Detail: "Detail", StatusRes: "Active"},
+			false,
+		},
+		{
+			"Status Inactive",
+			fields{Storage: storage.Storage{}}, args{2},
+			mockResponse{models.Category{Name: "Name", Detail: "Detail", Status: 0}, nil},
+			types.ResponseCode["Success"],
+			types.OutputCategory{Name: "Name", Detail: "Detail", StatusRes: "Inactive"},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mackCategory := mock.NewMockCategory(ctrl)
+			mackCategory.EXPECT().
+				GetByID(tt.args.id).
+				AnyTimes().
+				Return(tt.mockResponse.result, tt.mockResponse.err)
+			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 			}
@@ -235,18 +264,62 @@ func TestCategoryService_GetAll(t *testing.T) {
 		offset int64
 		limit  int64
 	}
+	type mockResponse struct {
+		result []models.Category
+		err    error
+	}
 	tests := []struct {
 		name             string
 		fields           fields
 		args             args
+		mockResponse     mockResponse
 		wantResponseCode int
 		wantResults      []types.OutputCategory
 		wantErr          bool
 	}{
-		// TODO: Add test cases.
+		{
+			"Status Active",
+			fields{Storage: storage.Storage{}},
+			args{},
+			mockResponse{
+				[]models.Category{
+					{Name: "Name", Detail: "Detail", Status: 1},
+				},
+				nil,
+			},
+			types.ResponseCode["Success"],
+			[]types.OutputCategory{
+				{Name: "Name", Detail: "Detail", StatusRes: "Active"},
+			},
+			false,
+		},
+		{
+			"Status Inactive",
+			fields{Storage: storage.Storage{}},
+			args{query: map[string]string{"Name": "Mas"}},
+			mockResponse{
+				[]models.Category{
+					{Name: "Name", Detail: "Detail", Status: 0},
+				},
+				nil,
+			},
+			types.ResponseCode["Success"],
+			[]types.OutputCategory{
+				{Name: "Name", Detail: "Detail", StatusRes: "Inactive"},
+			},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mackCategory := mock.NewMockCategory(ctrl)
+			mackCategory.EXPECT().
+				GetAll(tt.args.query, tt.args.fields, tt.args.sortby, tt.args.order, tt.args.offset, tt.args.limit).
+				AnyTimes().
+				Return(tt.mockResponse.result, tt.mockResponse.err)
+			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 			}
@@ -258,6 +331,8 @@ func TestCategoryService_GetAll(t *testing.T) {
 			if gotResponseCode != tt.wantResponseCode {
 				t.Errorf("CategoryService.GetAll() gotResponseCode = %v, want %v", gotResponseCode, tt.wantResponseCode)
 			}
+			fmt.Println("gotResults", gotResults)
+			fmt.Println("tt.wantResults", tt.wantResults)
 			if !reflect.DeepEqual(gotResults, tt.wantResults) {
 				t.Errorf("CategoryService.GetAll() gotResults = %v, want %v", gotResults, tt.wantResults)
 			}
@@ -269,6 +344,10 @@ func TestCategoryService_UpdateByID(t *testing.T) {
 	type fields struct {
 		Storage storage.Storage
 	}
+	type mockResponse struct {
+		num int64
+		err error
+	}
 	type args struct {
 		id       int64
 		category *types.InputUpdateCategory
@@ -277,13 +356,40 @@ func TestCategoryService_UpdateByID(t *testing.T) {
 		name             string
 		fields           fields
 		args             args
+		mockResponse     mockResponse
 		wantResponseCode int
 		wantErr          bool
 	}{
-		// TODO: Add test cases.
+		{
+			"Base case",
+			fields{Storage: storage.Storage{}},
+			args{id: 1, category: &types.InputUpdateCategory{Name: "Name"}},
+			mockResponse{num: 1, err: nil},
+			types.ResponseCode["Success"],
+			false,
+		},
+		{
+			"Not found ID",
+			fields{Storage: storage.Storage{}},
+			args{id: 2, category: &types.InputUpdateCategory{Name: "Name"}},
+			mockResponse{num: 0, err: nil},
+			types.ResponseCode["BadRequest"],
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mackCategory := mock.NewMockCategory(ctrl)
+			mackCategory.EXPECT().
+				UpdateByID(&models.Category{
+					Name: tt.args.category.Name,
+					ID:   tt.args.id,
+				}).
+				AnyTimes().
+				Return(tt.mockResponse.num, tt.mockResponse.err)
+			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 			}
