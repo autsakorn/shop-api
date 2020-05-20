@@ -5,7 +5,6 @@ import (
 	"shop-api/models"
 	"shop-api/storage"
 	"shop-api/types"
-	"time"
 
 	"github.com/jinzhu/copier"
 )
@@ -62,7 +61,7 @@ func (ps ProductService) Delete(id int64) (responseCode int, err error) {
 	}
 	num, err := ps.Storage.Product.Delete(&modelProduct)
 	if num < 1 {
-		errorMessage := "Not found"
+		errorMessage := "Not Found"
 		err = errors.New(errorMessage)
 		responseCode = types.ResponseCode["BadRequest"]
 	}
@@ -71,9 +70,12 @@ func (ps ProductService) Delete(id int64) (responseCode int, err error) {
 
 // GetByID ...
 func (ps ProductService) GetByID(id int64) (responseCode int, result types.OutputProduct, err error) {
+	responseCode = types.ResponseCode["Success"]
 	product, err := ps.Storage.Product.GetByID(id)
 	copier.Copy(&result, &product)
-	responseCode = types.ResponseCode["Success"]
+	if err != nil {
+		responseCode = types.ResponseCode["BadRequest"]
+	}
 	return
 }
 
@@ -95,7 +97,7 @@ func (ps ProductService) UpdateByID(id int64, product *types.InputUpdateProduct)
 	responseCode = types.ResponseCode["Success"]
 	dataProduct, err := ps.Storage.Product.GetByID(id)
 	m := models.Product{
-		ID:        id,
+		ID:        dataProduct.ID,
 		Name:      product.Name,
 		Detail:    product.Detail,
 		Brand:     product.Brand,
@@ -104,14 +106,13 @@ func (ps ProductService) UpdateByID(id int64, product *types.InputUpdateProduct)
 		Price:     product.Price,
 		Quantity:  product.Quantity,
 		CreatedAt: dataProduct.CreatedAt,
-		UpdatedAt: time.Now(),
 		Category: &models.Category{
 			ID: product.Category.ID,
 		},
 	}
 	num, err := ps.Storage.Product.UpdateByID(&m)
 	if num < 1 {
-		errorMessage := "Not found"
+		errorMessage := "Not Found"
 		err = errors.New(errorMessage)
 		responseCode = types.ResponseCode["BadRequest"]
 		return

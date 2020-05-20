@@ -78,8 +78,12 @@ func (s CategoryService) GetByID(id int64) (responseCode int, result types.Outpu
 }
 
 // GetAll ...
-func (s CategoryService) GetAll(query map[string]string, order []string,
-	offset int64, limit int64) (responseCode int, results []types.OutputCategory, err error) {
+func (s CategoryService) GetAll(
+	query map[string]string,
+	order []string,
+	offset int64,
+	limit int64,
+) (responseCode int, results []types.OutputCategory, err error) {
 	categories, err := s.Storage.Category.GetAll(query, order, offset, limit)
 	copier.Copy(&results, &categories)
 	responseCode = types.ResponseCode["Success"]

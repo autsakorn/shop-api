@@ -17,6 +17,7 @@ func main() {
 		orm.Debug = true
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
+		beego.BConfig.WebConfig.StaticDir["/coverage"] = "coverage"
 	}
 	beego.Run()
 }
