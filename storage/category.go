@@ -7,7 +7,7 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-// Category represents the action avilable
+// Category represents all possible actions available to deal with data
 type Category interface {
 	Add(input *models.Category) (id int64, err error)
 	Delete(input *models.Category) (num int64, err error)
@@ -16,13 +16,13 @@ type Category interface {
 	UpdateByID(input *models.Category) (num int64, err error)
 }
 
-// CategoryStorage ...
+// CategoryStorage define properties CategoryStorage
 type CategoryStorage struct{}
 
-// NewCategoryStorage ...
+// NewCategoryStorage return CategoryStorage
 func NewCategoryStorage() (categoryStorage CategoryStorage) { return }
 
-// Add ...
+// Add method add a new category
 func (s CategoryStorage) Add(input *models.Category) (id int64, err error) {
 	// Prepare data create
 	input.CreatedAt = time.Now()
@@ -32,7 +32,7 @@ func (s CategoryStorage) Add(input *models.Category) (id int64, err error) {
 	return
 }
 
-// Delete method for delete by _id
+// Delete method delete a category by ID
 func (s CategoryStorage) Delete(input *models.Category) (num int64, err error) {
 	o := orm.NewOrm()
 	num, err = o.Delete(input)
@@ -57,14 +57,14 @@ func (s CategoryStorage) GetAll(
 	return
 }
 
-// GetByID method for find one by ID
+// GetByID method retrieve all Category match by ID
 func (s CategoryStorage) GetByID(id int64) (result models.Category, err error) {
 	o := orm.NewOrm()
 	err = o.QueryTable(new(models.Category)).Filter("id", id).RelatedSel().One(&result)
 	return
 }
 
-// UpdateByID method for update by _id
+// UpdateByID method update category by ID
 func (s CategoryStorage) UpdateByID(input *models.Category) (num int64, err error) {
 	o := orm.NewOrm()
 	input.UpdatedAt = time.Now()

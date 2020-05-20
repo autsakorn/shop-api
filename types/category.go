@@ -1,19 +1,19 @@
 package types
 
-// InputAddCategory ...
+// InputAddCategory defines properties input add category
 type InputAddCategory struct {
 	Name   string `json:"name"`
 	Detail string `json:"detail"`
 	Status string `json:"status"`
 }
 
-// InputUpdateCategory ...
+// InputUpdateCategory defines properties input update category
 type InputUpdateCategory struct {
 	Name   string `json:"name"`
 	Detail string `json:"detail"`
 }
 
-// OutputCategory ...
+// OutputCategory defines properties output category
 type OutputCategory struct {
 	ID        int64  `json:"id"`
 	Name      string `json:"name"`

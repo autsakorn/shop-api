@@ -6,7 +6,7 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-// Product defines structure
+// Product defines the properties of a product
 type Product struct {
 	ID        int64     `orm:"column(id);auto"`
 	Name      string    `orm:"column(name);size(255)"`

@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   title: Shop API
   description: documents for Shop API
-  version: 1.0.1
+  version: 1.0.0
 basePath: /v1
 schemes:
 - http
@@ -65,7 +65,7 @@ paths:
     get:
       tags:
       - category
-      description: get Category by id
+      description: get Category by ID
       operationId: CategoryController.Get One
       parameters:
       - in: path

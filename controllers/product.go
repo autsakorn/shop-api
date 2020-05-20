@@ -25,7 +25,7 @@ func (c *ProductController) URLMapping() {
 	c.Mapping("Delete", c.Delete)
 }
 
-// Post ...
+// Post adds a new product to store
 // @Title Post
 // @Description create Product
 // @Param	body		body 	types.InputAddProduct	true		"body for Product content"
@@ -45,7 +45,7 @@ func (c *ProductController) Post() {
 	c.ServeJSON()
 }
 
-// GetOne ...
+// GetOne return the product by ID
 // @Title Get One
 // @Description get Product by id
 // @Param	id		path 	string	true		"The key for staticblock"
@@ -65,7 +65,7 @@ func (c *ProductController) GetOne() {
 	c.ServeJSON()
 }
 
-// GetAll ...
+// GetAll retrieves all product matches certain condition
 // @Title Get All
 // @Description get Product
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
@@ -117,7 +117,7 @@ func (c *ProductController) GetAll() {
 	c.ServeJSON()
 }
 
-// Put ...
+// Put update product by ID
 // @Title Put
 // @Description update the Product
 // @Param	id		path 	string	true		"The id you want to update"
@@ -140,7 +140,7 @@ func (c *ProductController) Put() {
 	c.ServeJSON()
 }
 
-// Delete ...
+// Delete product by ID
 // @Title Delete
 // @Description delete the Product
 // @Param	id		path 	string	true		"The id you want to delete"

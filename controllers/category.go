@@ -16,7 +16,7 @@ type CategoryController struct {
 	CategoryService services.CategoryService
 }
 
-// URLMapping ...
+// URLMapping Category controller
 func (c *CategoryController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
@@ -25,7 +25,7 @@ func (c *CategoryController) URLMapping() {
 	c.Mapping("Delete", c.Delete)
 }
 
-// Post ...
+// Post adds a new category
 // @Title Post
 // @Description create Category
 // @Param	body		body 	types.InputAddCategory	true		"body for Category content"
@@ -50,9 +50,9 @@ type response struct {
 	Message string `json:"message"`
 }
 
-// GetOne ...
+// GetOne return the category by ID
 // @Title Get One
-// @Description get Category by id
+// @Description get Category by ID
 // @Param	id		path 	string	true		"The key for staticblock"
 // @Success 200 {object} types.OutputCategory
 // @Failure 403 :id is empty
@@ -70,7 +70,7 @@ func (c *CategoryController) GetOne() {
 	c.ServeJSON()
 }
 
-// GetAll ...
+// GetAll retrieves all Category matches certain condition
 // @Title Get All
 // @Description get Category
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
@@ -124,7 +124,7 @@ func (c *CategoryController) GetAll() {
 	c.ServeJSON()
 }
 
-// Put ...
+// Put update category by ID
 // @Title Put
 // @Description update the Category
 // @Param	id		path 	string	true		"The id you want to update"
@@ -147,7 +147,7 @@ func (c *CategoryController) Put() {
 	c.ServeJSON()
 }
 
-// Delete ...
+// Delete category by ID
 // @Title Delete
 // @Description delete the Category
 // @Param	id		path 	string	true		"The id you want to delete"

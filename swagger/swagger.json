@@ -3,7 +3,7 @@
     "info": {
         "title": "Shop API",
         "description": "documents for Shop API",
-        "version": "1.0.1",
+        "version": "1.0.0",
         "contact": {}
     },
     "basePath": "/v1",
@@ -97,7 +97,7 @@
                 "tags": [
                     "category"
                 ],
-                "description": "get Category by id",
+                "description": "get Category by ID",
                 "operationId": "CategoryController.Get One",
                 "parameters": [
                     {

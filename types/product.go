@@ -1,10 +1,6 @@
 package types
 
-// Response ...
-type Response struct {
-	Message string `json:"message"`
-}
-
+// productCategory defines properties category input
 type productCategory struct {
 	ID int64 `json:"id"`
 }
@@ -21,11 +17,6 @@ type InputAddProduct struct {
 	Category productCategory `json:"Category"`
 }
 
-// InputDeleteProduct defines properties of input delete product
-type InputDeleteProduct struct {
-	ID int64 `json:"id"`
-}
-
 // InputUpdateProduct defines properties of input update and upsert product
 type InputUpdateProduct struct {
 	Name     string          `json:"name"`
@@ -38,7 +29,7 @@ type InputUpdateProduct struct {
 	Category productCategory `json:"Category"`
 }
 
-// OutputProduct ...
+// OutputProduct defines properties output product
 type OutputProduct struct {
 	ID       int64          `json:"id"`
 	Name     string         `json:"name"`
