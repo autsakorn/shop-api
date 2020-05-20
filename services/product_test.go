@@ -8,6 +8,7 @@ import (
 	"shop-api/storage/mock"
 	"shop-api/types"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 )
@@ -63,8 +64,8 @@ func TestProductService_Add(t *testing.T) {
 			args{types.InputAddProduct{Name: "Name", Detail: "Detail"}},
 			mockResponse{0, errors.New("Fail")},
 			types.ResponseCode["BadRequest"],
-			1,
-			false,
+			0,
+			true,
 		},
 	}
 	for _, tt := range tests {
@@ -107,17 +108,34 @@ func TestProductService_Delete(t *testing.T) {
 	type args struct {
 		id int64
 	}
+	type mockResponse struct {
+		num int64
+		err error
+	}
 	tests := []struct {
 		name             string
 		fields           fields
 		args             args
+		mockResponse     mockResponse
 		wantResponseCode int
 		wantErr          bool
 	}{
-		// TODO: Add test cases.
+		{"Base case", fields{Storage: storage.Storage{}}, args{1}, mockResponse{1, nil}, types.ResponseCode["Success"], false},
+		{"Not found ID", fields{Storage: storage.Storage{}}, args{2}, mockResponse{0, errors.New("Not Found")}, types.ResponseCode["BadRequest"], true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mackProduct := mock.NewMockProduct(ctrl)
+			mackProduct.EXPECT().
+				Delete(&models.Product{
+					ID: tt.args.id,
+				}).
+				AnyTimes().
+				Return(tt.mockResponse.num, tt.mockResponse.err)
+			tt.fields.Storage.Product = mackProduct
+
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 			}
@@ -140,18 +158,57 @@ func TestProductService_GetByID(t *testing.T) {
 	type args struct {
 		id int64
 	}
+	type mockResponse struct {
+		product models.Product
+		err     error
+	}
 	tests := []struct {
 		name             string
 		fields           fields
 		args             args
+		mockResponse     mockResponse
 		wantResponseCode int
 		wantResult       types.OutputProduct
 		wantErr          bool
 	}{
-		// TODO: Add test cases.
+		{
+			"Base case",
+			fields{storage.Storage{}},
+			args{1},
+			mockResponse{models.Product{Name: "Name", CreatedAt: time.Now()}, nil},
+			types.ResponseCode["Success"],
+			types.OutputProduct{Name: "Name"},
+			false,
+		},
+		{
+			"Base case",
+			fields{storage.Storage{}},
+			args{1},
+			mockResponse{models.Product{Name: "Name", CreatedAt: time.Now(), UpdatedAt: time.Now()}, nil},
+			types.ResponseCode["Success"],
+			types.OutputProduct{Name: "Name"},
+			false,
+		},
+		{
+			"No row found",
+			fields{storage.Storage{}},
+			args{100},
+			mockResponse{models.Product{}, errors.New("No row found")},
+			types.ResponseCode["BadRequest"],
+			types.OutputProduct{},
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mackProduct := mock.NewMockProduct(ctrl)
+			mackProduct.EXPECT().
+				GetByID(tt.args.id).
+				AnyTimes().
+				Return(tt.mockResponse.product, tt.mockResponse.err)
+			tt.fields.Storage.Product = mackProduct
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 			}
@@ -180,18 +237,39 @@ func TestProductService_GetAll(t *testing.T) {
 		offset int64
 		limit  int64
 	}
+	type mockResponse struct {
+		result []models.Product
+		err    error
+	}
 	tests := []struct {
 		name             string
 		fields           fields
 		args             args
+		mockResponse     mockResponse
 		wantResponseCode int
 		wantResults      []types.OutputProduct
 		wantErr          bool
 	}{
-		// TODO: Add test cases.
+		{
+			"Base case",
+			fields{storage.Storage{}},
+			args{map[string]string{}, []string{}, 0, 0},
+			mockResponse{[]models.Product{{Name: "Name", CreatedAt: time.Now()}}, nil},
+			types.ResponseCode["Success"],
+			[]types.OutputProduct{{Name: "Name"}},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mackProduct := mock.NewMockProduct(ctrl)
+			mackProduct.EXPECT().
+				GetAll(tt.args.query, tt.args.order, tt.args.offset, tt.args.limit).
+				AnyTimes().
+				Return(tt.mockResponse.result, tt.mockResponse.err)
+			tt.fields.Storage.Product = mackProduct
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 			}
@@ -218,17 +296,61 @@ func TestProductService_UpdateByID(t *testing.T) {
 		id      int64
 		product *types.InputUpdateProduct
 	}
+	type thirdPartyResponse struct {
+		num     int64
+		product models.Product
+		err     error
+	}
 	tests := []struct {
-		name             string
-		fields           fields
-		args             args
-		wantResponseCode int
-		wantErr          bool
+		name               string
+		fields             fields
+		args               args
+		thirdPartyResponse thirdPartyResponse
+		wantResponseCode   int
+		wantErr            bool
 	}{
-		// TODO: Add test cases.
+		{
+			"Base case",
+			fields{storage.Storage{}},
+			args{1, &types.InputUpdateProduct{}},
+			thirdPartyResponse{1, models.Product{ID: 1, Category: &models.Category{ID: 1}}, nil},
+			types.ResponseCode["Success"],
+			false,
+		},
+		{
+			"Not Found ID",
+			fields{storage.Storage{}},
+			args{1, &types.InputUpdateProduct{}},
+			thirdPartyResponse{0, models.Product{ID: 1, Category: &models.Category{ID: 1}}, errors.New("Not Found")},
+			types.ResponseCode["BadRequest"],
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mackProduct := mock.NewMockProduct(ctrl)
+			mackProduct.EXPECT().
+				GetByID(tt.args.id).
+				AnyTimes().
+				Return(tt.thirdPartyResponse.product, tt.thirdPartyResponse.err)
+			mackProduct.EXPECT().
+				UpdateByID(&models.Product{
+					ID:        tt.thirdPartyResponse.product.ID,
+					Name:      tt.args.product.Name,
+					Detail:    tt.args.product.Detail,
+					Brand:     tt.args.product.Brand,
+					Model:     tt.args.product.Model,
+					Cost:      tt.args.product.Cost,
+					Price:     tt.args.product.Price,
+					Quantity:  tt.args.product.Quantity,
+					CreatedAt: tt.thirdPartyResponse.product.CreatedAt,
+					Category:  &models.Category{ID: tt.args.product.Category.ID},
+				}).
+				AnyTimes().
+				Return(tt.thirdPartyResponse.num, tt.thirdPartyResponse.err)
+			tt.fields.Storage.Product = mackProduct
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 			}

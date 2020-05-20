@@ -7,6 +7,8 @@ services:
       - 8080:8080
     networks:
       - api-shop
+    environment:
+      SWAGGER_JSON: 'http://localhost:8081/swagger/swagger.json'
   api-shop:
     build: .
     ports:
