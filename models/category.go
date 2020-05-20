@@ -6,7 +6,7 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-// Category defines strcuture
+// Category defines the properties of a category
 type Category struct {
 	ID        int64     `orm:"column(id);auto"`
 	Name      string    `orm:"column(name);size(128)"`

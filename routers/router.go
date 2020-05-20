@@ -1,5 +1,5 @@
-// Package routers ...
-// @APIVersion 1.0.1
+// Package routers define version and api routes
+// @APIVersion 1.0.0
 // @Title Shop API
 // @Description documents for Shop API
 // @Schemes http

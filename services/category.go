@@ -10,7 +10,7 @@ import (
 	"github.com/jinzhu/copier"
 )
 
-// Category defines interface
+// Category represents all possible actions available for category services
 type Category interface {
 	Add(input *types.InputAddCategory) (responseCode int, id int64, err error)
 	Delete(id int64) (responseCode int, err error)
@@ -20,18 +20,19 @@ type Category interface {
 	UpdateByID(id int64, category *types.InputUpdateCategory) (responseCode int, err error)
 }
 
-// CategoryService ...
+// CategoryService defines properties
 type CategoryService struct {
 	Storage storage.Storage
 }
 
-// NewCategoryService ...
+// NewCategoryService map properties storage and return CategoryService
 func NewCategoryService() (s CategoryService) {
 	s.Storage = storage.NewStorage()
 	return
 }
 
-// Add ...
+// Add method for add a new category by InputAddCategory
+// Validate status and call to storage
 func (s CategoryService) Add(input *types.InputAddCategory) (responseCode int, id int64, err error) {
 	errorMessage := "Please enter valid status, Must be either [Active|Inactive]"
 	responseCode = types.ResponseCode["BadRequest"]
@@ -53,7 +54,7 @@ func (s CategoryService) Add(input *types.InputAddCategory) (responseCode int, i
 	return
 }
 
-// Delete ...
+// Delete method delete category by ID
 func (s CategoryService) Delete(id int64) (responseCode int, err error) {
 	errorMessage := "Not found"
 	responseCode = types.ResponseCode["Success"]
@@ -69,7 +70,7 @@ func (s CategoryService) Delete(id int64) (responseCode int, err error) {
 	return
 }
 
-// GetByID ...
+// GetByID service for retrieve category BY ID
 func (s CategoryService) GetByID(id int64) (responseCode int, result types.OutputCategory, err error) {
 	category, err := s.Storage.Category.GetByID(id)
 	copier.Copy(&result, &category)
@@ -77,7 +78,7 @@ func (s CategoryService) GetByID(id int64) (responseCode int, result types.Outpu
 	return
 }
 
-// GetAll ...
+// GetAll service for retrieves all Category matches certain condition
 func (s CategoryService) GetAll(
 	query map[string]string,
 	order []string,
@@ -90,7 +91,7 @@ func (s CategoryService) GetAll(
 	return
 }
 
-// UpdateByID ...
+// UpdateByID service for update category by ID and InputUpdateCategory
 func (s CategoryService) UpdateByID(id int64, category *types.InputUpdateCategory) (responseCode int, err error) {
 	errorMessage := "Not found"
 	responseCode = types.ResponseCode["Success"]

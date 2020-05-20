@@ -5,7 +5,9 @@ import (
 	"strings"
 )
 
-// TransFormSortFieldOrderGetAll ...
+// TransFormSortFieldOrderGetAll transform sort field string, order string to slice string
+// This logic depend on define arguments between controller service storage
+// return error if invalid format
 func TransFormSortFieldOrderGetAll(
 	sortbyStr string, orderStr string,
 ) (orderby []string, err error) {

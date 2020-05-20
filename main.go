@@ -13,7 +13,7 @@ import (
 func main() {
 	orm.RegisterDataBase("default", "postgres", beego.AppConfig.String("sqlconn"))
 	beego.ErrorController(&controllers.ErrorController{})
-	if beego.BConfig.RunMode == "dev" {
+	if beego.BConfig.RunMode == "dev" { // Provides swagger and test coverage for dev environment
 		orm.Debug = true
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"

@@ -9,7 +9,7 @@ import (
 	"github.com/jinzhu/copier"
 )
 
-// Product defines action
+// Product represents all possible actions available for product services
 type Product interface {
 	Add(product types.InputAddProduct) (responseCode int, id int64, err error)
 	Delete(id int64) (responseCode int, err error)
@@ -19,18 +19,18 @@ type Product interface {
 	UpdateByID(id int64, product *types.InputUpdateProduct) (responseCode int, err error)
 }
 
-// ProductService ...
+// ProductService defines propertie
 type ProductService struct {
 	Storage storage.Storage
 }
 
-// NewProductService ...
+// NewProductService map storage and return ProductService
 func NewProductService() (ps ProductService) {
 	ps.Storage = storage.NewStorage()
 	return
 }
 
-// Add ...
+// Add service for add a new product
 func (ps ProductService) Add(product types.InputAddProduct) (responseCode int, id int64, err error) {
 	responseCode = types.ResponseCode["BadRequest"]
 	inputModel := models.Product{
@@ -53,7 +53,7 @@ func (ps ProductService) Add(product types.InputAddProduct) (responseCode int, i
 	return
 }
 
-// Delete ...
+// Delete service for delete product by ID
 func (ps ProductService) Delete(id int64) (responseCode int, err error) {
 	responseCode = types.ResponseCode["Success"]
 	modelProduct := models.Product{
@@ -68,7 +68,7 @@ func (ps ProductService) Delete(id int64) (responseCode int, err error) {
 	return
 }
 
-// GetByID ...
+// GetByID service retrieve product by ID
 func (ps ProductService) GetByID(id int64) (responseCode int, result types.OutputProduct, err error) {
 	responseCode = types.ResponseCode["Success"]
 	product, err := ps.Storage.Product.GetByID(id)
@@ -79,7 +79,7 @@ func (ps ProductService) GetByID(id int64) (responseCode int, result types.Outpu
 	return
 }
 
-// GetAll ...
+// GetAll service for retrieves all product matches certain condition
 func (ps ProductService) GetAll(
 	query map[string]string,
 	order []string,
@@ -92,7 +92,7 @@ func (ps ProductService) GetAll(
 	return
 }
 
-// UpdateByID ...
+// UpdateByID service for update product by ID
 func (ps ProductService) UpdateByID(id int64, product *types.InputUpdateProduct) (responseCode int, err error) {
 	responseCode = types.ResponseCode["Success"]
 	dataProduct, err := ps.Storage.Product.GetByID(id)

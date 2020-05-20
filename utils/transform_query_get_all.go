@@ -5,7 +5,9 @@ import (
 	"strings"
 )
 
-// TransformQueryGetAll ...
+// TransformQueryGetAll utils function, transform query string to map string
+// This logic depend on define arguments between controller service storage
+// return error if invalid format
 func TransformQueryGetAll(queryStr string) (query map[string]string, err error) {
 	if queryStr != "" {
 		query = make(map[string]string) // queryStr: k:v,k:v

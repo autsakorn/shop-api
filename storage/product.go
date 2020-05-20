@@ -7,7 +7,7 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-// Product represents the action avilable
+// Product represents all possible actions available to deal with data
 type Product interface {
 	Add(*models.Product) (int64, error)
 	Delete(*models.Product) (int64, error)
@@ -32,7 +32,7 @@ func (s ProductStorage) Add(product *models.Product) (id int64, err error) {
 	return
 }
 
-// Delete method for delete by _id
+// Delete method delete product by ID
 func (s ProductStorage) Delete(product *models.Product) (num int64, err error) {
 	o := orm.NewOrm()
 	num, err = o.Delete(product)
@@ -57,14 +57,14 @@ func (s ProductStorage) GetAll(
 	return
 }
 
-// GetByID method for find one by ID
+// GetByID method retrieves product by ID
 func (s ProductStorage) GetByID(id int64) (v models.Product, err error) {
 	o := orm.NewOrm()
 	err = o.QueryTable(new(models.Product)).Filter("id", id).RelatedSel().One(&v)
 	return
 }
 
-// UpdateByID method for update by _id
+// UpdateByID method update product by ID
 func (s ProductStorage) UpdateByID(m *models.Product) (num int64, err error) {
 	o := orm.NewOrm()
 	m.UpdatedAt = time.Now()
