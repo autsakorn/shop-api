@@ -6,17 +6,18 @@ import (
 	"shop-api/storage"
 	"shop-api/types"
 
+	"github.com/astaxie/beego/orm"
 	"github.com/jinzhu/copier"
 )
 
 // Product represents all possible actions available for product services
 type Product interface {
-	Add(product types.InputAddProduct) (responseCode int, id int64, err error)
-	Delete(id int64) (responseCode int, err error)
-	GetByID(id int64) (responseCode int, product models.Product, err error)
-	GetAll(query map[string]string, fields []string, sortby []string, order []string,
+	Add(ormer orm.Ormer, product types.InputAddProduct) (responseCode int, id int64, err error)
+	Delete(ormer orm.Ormer, id int64) (responseCode int, err error)
+	GetByID(ormer orm.Ormer, id int64) (responseCode int, product models.Product, err error)
+	GetAll(ormer orm.Ormer, query map[string]string, fields []string, sortby []string, order []string,
 		offset int64, limit int64) (responseCode int, results []interface{}, err error)
-	UpdateByID(id int64, product *types.InputUpdateProduct) (responseCode int, err error)
+	UpdateByID(ormer orm.Ormer, id int64, product *types.InputUpdateProduct) (responseCode int, err error)
 }
 
 // ProductService defines propertie
@@ -31,7 +32,7 @@ func NewProductService() (ps ProductService) {
 }
 
 // Add service for add a new product
-func (ps ProductService) Add(product types.InputAddProduct) (responseCode int, id int64, err error) {
+func (ps ProductService) Add(ormer orm.Ormer, product types.InputAddProduct) (responseCode int, id int64, err error) {
 	responseCode = types.ResponseCode["BadRequest"]
 	inputModel := models.Product{
 		Name:     product.Name,
@@ -45,7 +46,7 @@ func (ps ProductService) Add(product types.InputAddProduct) (responseCode int, i
 			ID: product.Category.ID,
 		},
 	}
-	id, err = ps.Storage.Product.Add(&inputModel)
+	id, err = ps.Storage.Product.Add(ormer, &inputModel)
 	if id > 0 {
 		responseCode = types.ResponseCode["CreatedSuccess"]
 		return
@@ -54,12 +55,12 @@ func (ps ProductService) Add(product types.InputAddProduct) (responseCode int, i
 }
 
 // Delete service for delete product by ID
-func (ps ProductService) Delete(id int64) (responseCode int, err error) {
+func (ps ProductService) Delete(ormer orm.Ormer, id int64) (responseCode int, err error) {
 	responseCode = types.ResponseCode["Success"]
 	modelProduct := models.Product{
 		ID: id,
 	}
-	num, err := ps.Storage.Product.Delete(&modelProduct)
+	num, err := ps.Storage.Product.Delete(ormer, &modelProduct)
 	if num < 1 {
 		errorMessage := "Not Found"
 		err = errors.New(errorMessage)
@@ -69,9 +70,9 @@ func (ps ProductService) Delete(id int64) (responseCode int, err error) {
 }
 
 // GetByID service retrieve product by ID
-func (ps ProductService) GetByID(id int64) (responseCode int, result types.OutputProduct, err error) {
+func (ps ProductService) GetByID(ormer orm.Ormer, id int64) (responseCode int, result types.OutputProduct, err error) {
 	responseCode = types.ResponseCode["Success"]
-	product, err := ps.Storage.Product.GetByID(id)
+	product, err := ps.Storage.Product.GetByID(ormer, id)
 	copier.Copy(&result, &product)
 	if err != nil {
 		responseCode = types.ResponseCode["BadRequest"]
@@ -81,21 +82,22 @@ func (ps ProductService) GetByID(id int64) (responseCode int, result types.Outpu
 
 // GetAll service for retrieves all product matches certain condition
 func (ps ProductService) GetAll(
+	ormer orm.Ormer,
 	query map[string]string,
 	order []string,
 	offset int64,
 	limit int64,
 ) (responseCode int, results []types.OutputProduct, err error) {
-	products, err := ps.Storage.Product.GetAll(query, order, offset, limit)
+	products, err := ps.Storage.Product.GetAll(ormer, query, order, offset, limit)
 	copier.Copy(&results, &products)
 	responseCode = types.ResponseCode["Success"]
 	return
 }
 
 // UpdateByID service for update product by ID
-func (ps ProductService) UpdateByID(id int64, product *types.InputUpdateProduct) (responseCode int, err error) {
+func (ps ProductService) UpdateByID(ormer orm.Ormer, id int64, product *types.InputUpdateProduct) (responseCode int, err error) {
 	responseCode = types.ResponseCode["Success"]
-	dataProduct, err := ps.Storage.Product.GetByID(id)
+	dataProduct, err := ps.Storage.Product.GetByID(ormer, id)
 	m := models.Product{
 		ID:        dataProduct.ID,
 		Name:      product.Name,
@@ -110,7 +112,7 @@ func (ps ProductService) UpdateByID(id int64, product *types.InputUpdateProduct)
 			ID: product.Category.ID,
 		},
 	}
-	num, err := ps.Storage.Product.UpdateByID(&m)
+	num, err := ps.Storage.Product.UpdateByID(ormer, &m)
 	if num < 1 {
 		errorMessage := "Not Found"
 		err = errors.New(errorMessage)

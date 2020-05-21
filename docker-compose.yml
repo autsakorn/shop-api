@@ -22,8 +22,8 @@ services:
     depends_on: 
       - db-shop
     environment:
-      driver: postgres
-      sqlconn: postgres://user:pass@db-shop:5432/db?sslmode=disable
+      DRIVER: postgres
+      SQLCONN: postgres://user:pass@db-shop:5432/db?sslmode=disable
   db-shop:
     image: postgres:12
     volumes:
