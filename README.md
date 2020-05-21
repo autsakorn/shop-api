@@ -16,7 +16,7 @@ If you need to roll back the database
 - `bee rollback migrate -driver=$DRIVER -conn=$SQLCONN`
 
 # Swagger
-- Open your browser and go to http://localhost:8080
+- Open your browser and go to http://localhost:8080 or http://localhost:8081/swagger
 - swagger/swagger.json and swagger/swagger.yml are auto-generate but you can manual generate by 
 1. `docker-compose exec api-shop sh`
 2. `bee generate docs`
