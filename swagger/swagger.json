@@ -7,6 +7,9 @@
         "contact": {}
     },
     "basePath": "/v1",
+    "schemes": [
+        "http"
+    ],
     "paths": {
         "/category/": {
             "get": {
@@ -20,12 +23,6 @@
                         "in": "query",
                         "name": "query",
                         "description": "Filter. e.g. col1:v1,col2:v2 ...",
-                        "type": "string"
-                    },
-                    {
-                        "in": "query",
-                        "name": "fields",
-                        "description": "Fields returned. e.g. col1,col2 ...",
                         "type": "string"
                     },
                     {
@@ -57,11 +54,11 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/models.Category"
+                            "$ref": "#/definitions/types.OutputCategory"
                         }
                     },
                     "403": {
-                        "description": ""
+                        "description": "{string} string"
                     }
                 }
             },
@@ -78,16 +75,19 @@
                         "description": "body for Category content",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Category"
+                            "$ref": "#/definitions/types.InputAddCategory"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "{int} models.Category"
+                        "description": "{int}"
+                    },
+                    "400": {
+                        "description": "{int} Bad Request"
                     },
                     "403": {
-                        "description": "body is empty"
+                        "description": "{int} body is empty"
                     }
                 }
             }
@@ -97,7 +97,7 @@
                 "tags": [
                     "category"
                 ],
-                "description": "get Category by id",
+                "description": "get Category by ID",
                 "operationId": "CategoryController.Get One",
                 "parameters": [
                     {
@@ -112,7 +112,7 @@
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/models.Category"
+                            "$ref": "#/definitions/types.OutputCategory"
                         }
                     },
                     "403": {
@@ -140,7 +140,7 @@
                         "description": "body for Category content",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Category"
+                            "$ref": "#/definitions/types.InputUpdateCategory"
                         }
                     }
                 ],
@@ -180,6 +180,173 @@
                     }
                 }
             }
+        },
+        "/product/": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "description": "get Product",
+                "operationId": "ProductController.Get All",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sortby",
+                        "description": "Sorted-by fields. e.g. col1,col2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "order",
+                        "description": "Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limit the size of result set. Must be an integer",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Start position of result set. Must be an integer",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/types.OutputProduct"
+                        }
+                    },
+                    "403": {
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "product"
+                ],
+                "description": "create Product",
+                "operationId": "ProductController.Post",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Product content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.InputAddProduct"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int}"
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                }
+            }
+        },
+        "/product/{id}": {
+            "get": {
+                "tags": [
+                    "product"
+                ],
+                "description": "get Product by id",
+                "operationId": "ProductController.Get One",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/types.OutputProduct"
+                        }
+                    },
+                    "403": {
+                        "description": ":id is empty"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "product"
+                ],
+                "description": "update the Product",
+                "operationId": "ProductController.Put",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The id you want to update",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Product content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.InputUpdateProduct"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Product"
+                        }
+                    },
+                    "403": {
+                        "description": ":id is not int"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "product"
+                ],
+                "description": "delete the Product",
+                "operationId": "ProductController.Delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The id you want to delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} delete success!"
+                    },
+                    "403": {
+                        "description": "id is empty"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -187,15 +354,231 @@
             "title": "Category",
             "type": "object",
             "properties": {
+                "CreatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                },
                 "Detail": {
                     "type": "string"
                 },
-                "Id": {
+                "ID": {
                     "type": "integer",
                     "format": "int64"
                 },
                 "Name": {
                     "type": "string"
+                },
+                "Status": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "UpdatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            }
+        },
+        "models.Product": {
+            "title": "Product",
+            "type": "object",
+            "properties": {
+                "Brand": {
+                    "type": "string"
+                },
+                "Category": {
+                    "$ref": "#/definitions/models.Category"
+                },
+                "Cost": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "CreatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Detail": {
+                    "type": "string"
+                },
+                "ID": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Model": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Price": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "Quantity": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "UpdatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            }
+        },
+        "types.InputAddCategory": {
+            "title": "InputAddCategory",
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.InputAddProduct": {
+            "title": "InputAddProduct",
+            "type": "object",
+            "properties": {
+                "Category": {
+                    "$ref": "#/definitions/types.productCategory"
+                },
+                "brand": {
+                    "type": "string"
+                },
+                "cost": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "types.InputUpdateCategory": {
+            "title": "InputUpdateCategory",
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.InputUpdateProduct": {
+            "title": "InputUpdateProduct",
+            "type": "object",
+            "properties": {
+                "Category": {
+                    "$ref": "#/definitions/types.productCategory"
+                },
+                "brand": {
+                    "type": "string"
+                },
+                "cost": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "types.OutputCategory": {
+            "title": "OutputCategory",
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.OutputProduct": {
+            "title": "OutputProduct",
+            "type": "object",
+            "properties": {
+                "Category": {
+                    "$ref": "#/definitions/types.OutputCategory"
+                },
+                "brand": {
+                    "type": "string"
+                },
+                "cost": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "types.productCategory": {
+            "title": "productCategory",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         }
@@ -203,7 +586,15 @@
     "tags": [
         {
             "name": "category",
-            "description": " CategoryController operations for Category\n"
+            "description": "CategoryController operations for Category\n"
+        },
+        {
+            "name": "product",
+            "description": "ProductController operations for Product\n"
+        },
+        {
+            "name": "error",
+            "description": "ErrorController ...\n"
         }
     ]
 }

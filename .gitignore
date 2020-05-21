@@ -11,7 +11,12 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+commentsRouter__________*
+coverage.html
+coverage/
 shop-api
-
+lastupdate.tmp
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+*prof

@@ -10,14 +10,14 @@ import (
 	"github.com/astaxie/beego"
 )
 
-// CategoryController operations for Category
-type CategoryController struct {
+// ProductController operations for Product
+type ProductController struct {
 	beego.Controller
-	CategoryService services.CategoryService
+	ProductService services.ProductService
 }
 
-// URLMapping Category controller
-func (c *CategoryController) URLMapping() {
+// URLMapping ...
+func (c *ProductController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
@@ -25,18 +25,17 @@ func (c *CategoryController) URLMapping() {
 	c.Mapping("Delete", c.Delete)
 }
 
-// Post adds a new category
+// Post adds a new product to store
 // @Title Post
-// @Description create Category
-// @Param	body		body 	types.InputAddCategory	true		"body for Category content"
+// @Description create Product
+// @Param	body		body 	types.InputAddProduct	true		"body for Product content"
 // @Success 201 {int}
-// @Failure 403 {int} body is empty
-// @Failure 400 {int} Bad Request
+// @Failure 403 body is empty
 // @router / [post]
-func (c *CategoryController) Post() {
-	var v types.InputAddCategory
+func (c *ProductController) Post() {
+	var v types.InputAddProduct
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	responseCode, id, err := c.CategoryService.Add(&v)
+	responseCode, id, err := c.ProductService.Add(v)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err == nil {
 		c.Data["json"] = id
@@ -46,21 +45,17 @@ func (c *CategoryController) Post() {
 	c.ServeJSON()
 }
 
-type response struct {
-	Message string `json:"message"`
-}
-
-// GetOne return the category by ID
+// GetOne return the product by ID
 // @Title Get One
-// @Description get Category by ID
+// @Description get Product by id
 // @Param	id		path 	string	true		"The key for staticblock"
-// @Success 200 {object} types.OutputCategory
+// @Success 200 {object} types.OutputProduct
 // @Failure 403 :id is empty
 // @router /:id [get]
-func (c *CategoryController) GetOne() {
+func (c *ProductController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	responseCode, result, err := c.CategoryService.GetByID(id)
+	responseCode, result, err := c.ProductService.GetByID(id)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err != nil {
 		c.Data["json"] = err.Error()
@@ -70,19 +65,18 @@ func (c *CategoryController) GetOne() {
 	c.ServeJSON()
 }
 
-// GetAll retrieves all Category matches certain condition
+// GetAll retrieves all product matches certain condition
 // @Title Get All
-// @Description get Category
+// @Description get Product
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
 // @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
 // @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
 // @Param	offset	query	string	false	"Start position of result set. Must be an integer"
-// @Success 200 {object} types.OutputCategory
-// @Failure 403 {string} string
-// @Header 403 {string} string
+// @Success 200 {object} types.OutputProduct
+// @Failure 403
 // @router / [get]
-func (c *CategoryController) GetAll() {
+func (c *ProductController) GetAll() {
 	var limit int64 = 10
 	var offset int64
 	// limit: 10 (default is 10)
@@ -93,7 +87,6 @@ func (c *CategoryController) GetAll() {
 	if v, err := c.GetInt64("offset"); err == nil {
 		offset = v
 	}
-
 	queryString := c.GetString("query")
 	query, err := utils.TransformQueryGetAll(queryString)
 	if err != nil {
@@ -114,7 +107,7 @@ func (c *CategoryController) GetAll() {
 		c.ServeJSON()
 		return
 	}
-	responseCode, results, err := c.CategoryService.GetAll(query, order, offset, limit)
+	responseCode, results, err := c.ProductService.GetAll(query, order, offset, limit)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err != nil {
 		c.Data["json"] = err.Error()
@@ -124,20 +117,20 @@ func (c *CategoryController) GetAll() {
 	c.ServeJSON()
 }
 
-// Put update category by ID
+// Put update product by ID
 // @Title Put
-// @Description update the Category
+// @Description update the Product
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	types.InputUpdateCategory	true		"body for Category content"
-// @Success 200 {object} models.Category
+// @Param	body		body 	types.InputUpdateProduct	true		"body for Product content"
+// @Success 200 {object} models.Product
 // @Failure 403 :id is not int
 // @router /:id [put]
-func (c *CategoryController) Put() {
+func (c *ProductController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	var v types.InputUpdateCategory
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	responseCode, err := c.CategoryService.UpdateByID(id, &v)
+	var input types.InputUpdateProduct
+	json.Unmarshal(c.Ctx.Input.RequestBody, &input)
+	responseCode, err := c.ProductService.UpdateByID(id, &input)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err == nil {
 		c.Data["json"] = "OK"
@@ -147,20 +140,20 @@ func (c *CategoryController) Put() {
 	c.ServeJSON()
 }
 
-// Delete category by ID
+// Delete product by ID
 // @Title Delete
-// @Description delete the Category
+// @Description delete the Product
 // @Param	id		path 	string	true		"The id you want to delete"
 // @Success 200 {string} delete success!
 // @Failure 403 id is empty
 // @router /:id [delete]
-func (c *CategoryController) Delete() {
+func (c *ProductController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	responseCode, err := c.CategoryService.Delete(id)
-	c.Ctx.Output.SetStatus(responseCode)
+	responseCdoe, err := c.ProductService.Delete(id)
+	c.Ctx.Output.SetStatus(responseCdoe)
 	if err == nil {
-		c.Data["json"] = "OK"
+		c.Data["json"] = id
 	} else {
 		c.Data["json"] = err.Error()
 	}
