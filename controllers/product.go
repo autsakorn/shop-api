@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"shop-api/helper"
 	"shop-api/services"
 	"shop-api/types"
 	"shop-api/utils"
@@ -35,7 +36,8 @@ func (c *ProductController) URLMapping() {
 func (c *ProductController) Post() {
 	var v types.InputAddProduct
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	responseCode, id, err := c.ProductService.Add(v)
+	ormer := helper.NewOrm(false)
+	responseCode, id, err := c.ProductService.Add(ormer, v)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err == nil {
 		c.Data["json"] = id
@@ -55,7 +57,8 @@ func (c *ProductController) Post() {
 func (c *ProductController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	responseCode, result, err := c.ProductService.GetByID(id)
+	ormer := helper.NewOrm(false)
+	responseCode, result, err := c.ProductService.GetByID(ormer, id)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err != nil {
 		c.Data["json"] = err.Error()
@@ -107,7 +110,8 @@ func (c *ProductController) GetAll() {
 		c.ServeJSON()
 		return
 	}
-	responseCode, results, err := c.ProductService.GetAll(query, order, offset, limit)
+	ormer := helper.NewOrm(false)
+	responseCode, results, err := c.ProductService.GetAll(ormer, query, order, offset, limit)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err != nil {
 		c.Data["json"] = err.Error()
@@ -130,7 +134,8 @@ func (c *ProductController) Put() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	var input types.InputUpdateProduct
 	json.Unmarshal(c.Ctx.Input.RequestBody, &input)
-	responseCode, err := c.ProductService.UpdateByID(id, &input)
+	ormer := helper.NewOrm(false)
+	responseCode, err := c.ProductService.UpdateByID(ormer, id, &input)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err == nil {
 		c.Data["json"] = "OK"
@@ -150,7 +155,8 @@ func (c *ProductController) Put() {
 func (c *ProductController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	responseCdoe, err := c.ProductService.Delete(id)
+	ormer := helper.NewOrm(false)
+	responseCdoe, err := c.ProductService.Delete(ormer, id)
 	c.Ctx.Output.SetStatus(responseCdoe)
 	if err == nil {
 		c.Data["json"] = id

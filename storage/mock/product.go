@@ -5,6 +5,7 @@
 package mock
 
 import (
+	orm "github.com/astaxie/beego/orm"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 	models "shop-api/models"
@@ -34,76 +35,76 @@ func (m *MockProduct) EXPECT() *MockProductMockRecorder {
 }
 
 // Add mocks base method
-func (m *MockProduct) Add(arg0 *models.Product) (int64, error) {
+func (m *MockProduct) Add(arg0 orm.Ormer, arg1 *models.Product) (int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Add", arg0)
+	ret := m.ctrl.Call(m, "Add", arg0, arg1)
 	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Add indicates an expected call of Add
-func (mr *MockProductMockRecorder) Add(arg0 interface{}) *gomock.Call {
+func (mr *MockProductMockRecorder) Add(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockProduct)(nil).Add), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockProduct)(nil).Add), arg0, arg1)
 }
 
 // Delete mocks base method
-func (m *MockProduct) Delete(arg0 *models.Product) (int64, error) {
+func (m *MockProduct) Delete(arg0 orm.Ormer, arg1 *models.Product) (int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", arg0)
+	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
 	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Delete indicates an expected call of Delete
-func (mr *MockProductMockRecorder) Delete(arg0 interface{}) *gomock.Call {
+func (mr *MockProductMockRecorder) Delete(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockProduct)(nil).Delete), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockProduct)(nil).Delete), arg0, arg1)
 }
 
 // GetAll mocks base method
-func (m *MockProduct) GetAll(arg0 map[string]string, arg1 []string, arg2, arg3 int64) ([]models.Product, error) {
+func (m *MockProduct) GetAll(arg0 orm.Ormer, arg1 map[string]string, arg2 []string, arg3, arg4 int64) ([]models.Product, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAll", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "GetAll", arg0, arg1, arg2, arg3, arg4)
 	ret0, _ := ret[0].([]models.Product)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAll indicates an expected call of GetAll
-func (mr *MockProductMockRecorder) GetAll(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+func (mr *MockProductMockRecorder) GetAll(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockProduct)(nil).GetAll), arg0, arg1, arg2, arg3)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockProduct)(nil).GetAll), arg0, arg1, arg2, arg3, arg4)
 }
 
 // GetByID mocks base method
-func (m *MockProduct) GetByID(arg0 int64) (models.Product, error) {
+func (m *MockProduct) GetByID(arg0 orm.Ormer, arg1 int64) (models.Product, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", arg0)
+	ret := m.ctrl.Call(m, "GetByID", arg0, arg1)
 	ret0, _ := ret[0].(models.Product)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetByID indicates an expected call of GetByID
-func (mr *MockProductMockRecorder) GetByID(arg0 interface{}) *gomock.Call {
+func (mr *MockProductMockRecorder) GetByID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockProduct)(nil).GetByID), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockProduct)(nil).GetByID), arg0, arg1)
 }
 
 // UpdateByID mocks base method
-func (m *MockProduct) UpdateByID(arg0 *models.Product) (int64, error) {
+func (m *MockProduct) UpdateByID(arg0 orm.Ormer, arg1 *models.Product) (int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateByID", arg0)
+	ret := m.ctrl.Call(m, "UpdateByID", arg0, arg1)
 	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateByID indicates an expected call of UpdateByID
-func (mr *MockProductMockRecorder) UpdateByID(arg0 interface{}) *gomock.Call {
+func (mr *MockProductMockRecorder) UpdateByID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateByID", reflect.TypeOf((*MockProduct)(nil).UpdateByID), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateByID", reflect.TypeOf((*MockProduct)(nil).UpdateByID), arg0, arg1)
 }
