@@ -14,9 +14,14 @@ import (
 type Product interface {
 	Add(ormer orm.Ormer, product types.InputAddProduct) (responseCode int, id int64, err error)
 	Delete(ormer orm.Ormer, id int64) (responseCode int, err error)
-	GetByID(ormer orm.Ormer, id int64) (responseCode int, product models.Product, err error)
-	GetAll(ormer orm.Ormer, query map[string]string, fields []string, sortby []string, order []string,
-		offset int64, limit int64) (responseCode int, results []interface{}, err error)
+	GetByID(ormer orm.Ormer, id int64) (responseCode int, product types.OutputProduct, err error)
+	GetAll(
+		ormer orm.Ormer,
+		query map[string]string,
+		order []string,
+		offset int64,
+		limit int64,
+	) (responseCode int, results []types.OutputProduct, err error)
 	UpdateByID(ormer orm.Ormer, id int64, product *types.InputUpdateProduct) (responseCode int, err error)
 }
 
