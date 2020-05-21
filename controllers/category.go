@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"shop-api/helper"
 	"shop-api/services"
 	"shop-api/types"
 	"shop-api/utils"
@@ -36,7 +37,8 @@ func (c *CategoryController) URLMapping() {
 func (c *CategoryController) Post() {
 	var v types.InputAddCategory
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	responseCode, id, err := c.CategoryService.Add(&v)
+	ormer := helper.NewOrm(true)
+	responseCode, id, err := c.CategoryService.Add(ormer, &v)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err == nil {
 		c.Data["json"] = id
@@ -60,7 +62,8 @@ type response struct {
 func (c *CategoryController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	responseCode, result, err := c.CategoryService.GetByID(id)
+	ormer := helper.NewOrm(false)
+	responseCode, result, err := c.CategoryService.GetByID(ormer, id)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err != nil {
 		c.Data["json"] = err.Error()
@@ -114,7 +117,8 @@ func (c *CategoryController) GetAll() {
 		c.ServeJSON()
 		return
 	}
-	responseCode, results, err := c.CategoryService.GetAll(query, order, offset, limit)
+	ormer := helper.NewOrm(false)
+	responseCode, results, err := c.CategoryService.GetAll(ormer, query, order, offset, limit)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err != nil {
 		c.Data["json"] = err.Error()
@@ -137,7 +141,8 @@ func (c *CategoryController) Put() {
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 	var v types.InputUpdateCategory
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	responseCode, err := c.CategoryService.UpdateByID(id, &v)
+	ormer := helper.NewOrm(false)
+	responseCode, err := c.CategoryService.UpdateByID(ormer, id, &v)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err == nil {
 		c.Data["json"] = "OK"
@@ -157,7 +162,8 @@ func (c *CategoryController) Put() {
 func (c *CategoryController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	responseCode, err := c.CategoryService.Delete(id)
+	ormer := helper.NewOrm(false)
+	responseCode, err := c.CategoryService.Delete(ormer, id)
 	c.Ctx.Output.SetStatus(responseCode)
 	if err == nil {
 		c.Data["json"] = "OK"
