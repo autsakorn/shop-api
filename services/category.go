@@ -28,7 +28,6 @@ type Category interface {
 // CategoryService defines properties
 type CategoryService struct {
 	Storage storage.Storage
-	Orm     orm.Ormer
 }
 
 // NewCategoryService map properties storage and return CategoryService
