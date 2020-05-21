@@ -9,6 +9,7 @@ Most of this application built by the standard library.
 # Migrate
 After running the docker, you need to migrate the database.
 You can migrate by executing to docker and run migrate by command 2 steps.
+
 1. `docker-compose exec api-shop sh`
 2. `bee migrate -driver=$DRIVER -conn=$SQLCONN`
 
@@ -18,6 +19,7 @@ If you need to roll back the database
 # Swagger
 - Open your browser and go to http://localhost:8080 or http://localhost:8081/swagger
 - swagger/swagger.json and swagger/swagger.yml are auto-generate but you can manual generate by 
+
 1. `docker-compose exec api-shop sh`
 2. `bee generate docs`
 
