@@ -14,7 +14,7 @@ import (
 // ProductController operations for Product
 type ProductController struct {
 	beego.Controller
-	ProductService services.ProductService
+	ProductService services.Product
 }
 
 // URLMapping ...

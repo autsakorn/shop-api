@@ -14,7 +14,7 @@ import (
 // CategoryController operations for Category
 type CategoryController struct {
 	beego.Controller
-	CategoryService services.CategoryService
+	CategoryService services.Category
 }
 
 // URLMapping Category controller
