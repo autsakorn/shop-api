@@ -16,10 +16,10 @@ type Product interface {
 	UpdateByID(*models.Product) (int64, error)
 }
 
-// ProductStorage ...
+// ProductStorage defines properties
 type ProductStorage struct{}
 
-// NewProductStorage ...
+// NewProductStorage return ProductStorage
 func NewProductStorage() (productStorage ProductStorage) { return }
 
 // Add new record

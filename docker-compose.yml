@@ -13,6 +13,7 @@ services:
     build: .
     ports:
       - 8081:8081
+      - 8088:8088
     networks:
       - api-shop
     command: bee run -downdoc=true -gendoc=true
