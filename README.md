@@ -44,7 +44,7 @@ This project has 4 layers:
 - Models layer
 
 ### Controllers layer
-The controller layer is the user interface. This is the software user sees and interacts with. They enter the needed information. This layer passing on the user’s different actions to the serivce layer.
+The controller layer is the user interface. This is the software user sees and interacts with. They enter the needed information. This layer passing on the user’s different actions to the service layer.
 
 ### Services layer
 The service layer is where all the thinking happens, this layer contains application-specific business rules and makes decisions. This service layer is also the one that calls method writes and reads data into the storage layer.

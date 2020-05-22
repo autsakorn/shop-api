@@ -1,10 +1,10 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"reflect"
 	"shop-api/config"
-	"shop-api/helper"
 	"shop-api/models"
 	"shop-api/storage"
 	"shop-api/storage/mock"
@@ -49,20 +49,19 @@ func TestProductService_Add(t *testing.T) {
 		err error
 	}
 	tests := []struct {
-		name             string
-		fields           fields
-		args             args
-		mockResponse     mockResponse
-		wantResponseCode int
-		wantID           int64
-		wantErr          bool
+		name         string
+		fields       fields
+		args         args
+		mockResponse mockResponse
+
+		wantID  int64
+		wantErr bool
 	}{
 		{
 			"Base case",
 			fields{Storage: storage.Storage{}},
 			args{types.InputAddProduct{Name: "Name", Detail: "Detail"}},
 			mockResponse{1, nil},
-			types.ResponseCode["CreatedSuccess"],
 			1,
 			false,
 		},
@@ -71,7 +70,6 @@ func TestProductService_Add(t *testing.T) {
 			fields{Storage: storage.Storage{}},
 			args{types.InputAddProduct{Name: "Name", Detail: "Detail"}},
 			mockResponse{0, errors.New("Fail")},
-			types.ResponseCode["BadRequest"],
 			0,
 			true,
 		},
@@ -81,7 +79,8 @@ func TestProductService_Add(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := helper.NewOrm(false)
+			ormer := orm.NewOrm()
+			ctx := context.Background()
 			mackProduct.EXPECT().
 				Add(
 					ormer,
@@ -97,13 +96,10 @@ func TestProductService_Add(t *testing.T) {
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 			}
-			gotResponseCode, gotID, err := ps.Add(ormer, tt.args.product)
+			gotID, err := ps.Add(ctx, ormer, tt.args.product)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.Add() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if gotResponseCode != tt.wantResponseCode {
-				t.Errorf("ProductService.Add() gotResponseCode = %v, want %v", gotResponseCode, tt.wantResponseCode)
 			}
 			if gotID != tt.wantID {
 				t.Errorf("ProductService.Add() gotID = %v, want %v", gotID, tt.wantID)
@@ -124,22 +120,22 @@ func TestProductService_Delete(t *testing.T) {
 		err error
 	}
 	tests := []struct {
-		name             string
-		fields           fields
-		args             args
-		mockResponse     mockResponse
-		wantResponseCode int
-		wantErr          bool
+		name         string
+		fields       fields
+		args         args
+		mockResponse mockResponse
+		wantErr      bool
 	}{
-		{"Base case", fields{Storage: storage.Storage{}}, args{1}, mockResponse{1, nil}, types.ResponseCode["Success"], false},
-		{"Not found ID", fields{Storage: storage.Storage{}}, args{2}, mockResponse{0, errors.New("Not Found")}, types.ResponseCode["BadRequest"], true},
+		{"Base case", fields{Storage: storage.Storage{}}, args{1}, mockResponse{1, nil}, false},
+		{"Not found ID", fields{Storage: storage.Storage{}}, args{2}, mockResponse{0, errors.New("Not Found")}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := helper.NewOrm(false)
+			ormer := orm.NewOrm()
+			ctx := context.Background()
 			mackProduct.EXPECT().
 				Delete(
 					ormer,
@@ -153,13 +149,10 @@ func TestProductService_Delete(t *testing.T) {
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 			}
-			gotResponseCode, err := ps.Delete(ormer, tt.args.id)
+			err := ps.Delete(ctx, ormer, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.Delete() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if gotResponseCode != tt.wantResponseCode {
-				t.Errorf("ProductService.Delete() = %v, want %v", gotResponseCode, tt.wantResponseCode)
 			}
 		})
 	}
@@ -177,20 +170,18 @@ func TestProductService_GetByID(t *testing.T) {
 		err     error
 	}
 	tests := []struct {
-		name             string
-		fields           fields
-		args             args
-		mockResponse     mockResponse
-		wantResponseCode int
-		wantResult       types.OutputProduct
-		wantErr          bool
+		name         string
+		fields       fields
+		args         args
+		mockResponse mockResponse
+		wantResult   types.OutputProduct
+		wantErr      bool
 	}{
 		{
 			"Base case",
 			fields{storage.Storage{}},
 			args{1},
 			mockResponse{models.Product{Name: "Name", CreatedAt: time.Now()}, nil},
-			types.ResponseCode["Success"],
 			types.OutputProduct{Name: "Name"},
 			false,
 		},
@@ -199,7 +190,6 @@ func TestProductService_GetByID(t *testing.T) {
 			fields{storage.Storage{}},
 			args{1},
 			mockResponse{models.Product{Name: "Name", CreatedAt: time.Now(), UpdatedAt: time.Now()}, nil},
-			types.ResponseCode["Success"],
 			types.OutputProduct{Name: "Name"},
 			false,
 		},
@@ -208,7 +198,6 @@ func TestProductService_GetByID(t *testing.T) {
 			fields{storage.Storage{}},
 			args{100},
 			mockResponse{models.Product{}, errors.New("No row found")},
-			types.ResponseCode["BadRequest"],
 			types.OutputProduct{},
 			true,
 		},
@@ -218,7 +207,8 @@ func TestProductService_GetByID(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := helper.NewOrm(false)
+			ormer := orm.NewOrm()
+			ctx := context.Background()
 			mackProduct.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
@@ -227,13 +217,10 @@ func TestProductService_GetByID(t *testing.T) {
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 			}
-			gotResponseCode, gotResult, err := ps.GetByID(ormer, tt.args.id)
+			gotResult, err := ps.GetByID(ctx, ormer, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.GetByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if gotResponseCode != tt.wantResponseCode {
-				t.Errorf("ProductService.GetByID() gotResponseCode = %v, want %v", gotResponseCode, tt.wantResponseCode)
 			}
 			if !reflect.DeepEqual(gotResult, tt.wantResult) {
 				t.Errorf("ProductService.GetByID() gotResult = %v, want %v", gotResult, tt.wantResult)
@@ -257,20 +244,18 @@ func TestProductService_GetAll(t *testing.T) {
 		err    error
 	}
 	tests := []struct {
-		name             string
-		fields           fields
-		args             args
-		mockResponse     mockResponse
-		wantResponseCode int
-		wantResults      []types.OutputProduct
-		wantErr          bool
+		name         string
+		fields       fields
+		args         args
+		mockResponse mockResponse
+		wantResults  []types.OutputProduct
+		wantErr      bool
 	}{
 		{
 			"Base case",
 			fields{storage.Storage{}},
 			args{map[string]string{}, []string{}, 0, 0},
 			mockResponse{[]models.Product{{Name: "Name", CreatedAt: time.Now()}}, nil},
-			types.ResponseCode["Success"],
 			[]types.OutputProduct{{Name: "Name"}},
 			false,
 		},
@@ -280,7 +265,8 @@ func TestProductService_GetAll(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := helper.NewOrm(false)
+			ormer := orm.NewOrm()
+			ctx := context.Background()
 			mackProduct.EXPECT().
 				GetAll(ormer, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit).
 				AnyTimes().
@@ -289,13 +275,10 @@ func TestProductService_GetAll(t *testing.T) {
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 			}
-			gotResponseCode, gotResults, err := ps.GetAll(ormer, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit)
+			gotResults, err := ps.GetAll(ctx, ormer, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.GetAll() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if gotResponseCode != tt.wantResponseCode {
-				t.Errorf("ProductService.GetAll() gotResponseCode = %v, want %v", gotResponseCode, tt.wantResponseCode)
 			}
 			if !reflect.DeepEqual(gotResults, tt.wantResults) {
 				t.Errorf("ProductService.GetAll() gotResults = %v, want %v", gotResults, tt.wantResults)
@@ -322,7 +305,6 @@ func TestProductService_UpdateByID(t *testing.T) {
 		fields             fields
 		args               args
 		thirdPartyResponse thirdPartyResponse
-		wantResponseCode   int
 		wantErr            bool
 	}{
 		{
@@ -330,7 +312,6 @@ func TestProductService_UpdateByID(t *testing.T) {
 			fields{storage.Storage{}},
 			args{1, &types.InputUpdateProduct{}},
 			thirdPartyResponse{1, models.Product{ID: 1, Category: &models.Category{ID: 1}}, nil},
-			types.ResponseCode["Success"],
 			false,
 		},
 		{
@@ -338,7 +319,6 @@ func TestProductService_UpdateByID(t *testing.T) {
 			fields{storage.Storage{}},
 			args{1, &types.InputUpdateProduct{}},
 			thirdPartyResponse{0, models.Product{ID: 1, Category: &models.Category{ID: 1}}, errors.New("Not Found")},
-			types.ResponseCode["BadRequest"],
 			true,
 		},
 	}
@@ -347,7 +327,8 @@ func TestProductService_UpdateByID(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := helper.NewOrm(false)
+			ormer := orm.NewOrm()
+			ctx := context.Background()
 			mackProduct.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
@@ -373,13 +354,10 @@ func TestProductService_UpdateByID(t *testing.T) {
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 			}
-			gotResponseCode, err := ps.UpdateByID(ormer, tt.args.id, tt.args.product)
+			err := ps.UpdateByID(ctx, ormer, tt.args.id, tt.args.product)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.UpdateByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if gotResponseCode != tt.wantResponseCode {
-				t.Errorf("ProductService.UpdateByID() = %v, want %v", gotResponseCode, tt.wantResponseCode)
 			}
 		})
 	}
