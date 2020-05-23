@@ -1,120 +1,119 @@
 package services
 
 import (
+	"context"
+	"database/sql"
 	"errors"
+	"shop-api/helper"
 	"shop-api/models"
 	"shop-api/storage"
 	"shop-api/types"
 	"shop-api/utils"
 
-	"github.com/astaxie/beego/orm"
 	"github.com/jinzhu/copier"
 )
 
 // Category represents all possible actions available for category services
 type Category interface {
-	Add(ormer orm.Ormer, input *types.InputAddCategory) (responseCode int, id int64, err error)
-	Delete(ormer orm.Ormer, id int64) (responseCode int, err error)
-	GetAll(ormer orm.Ormer,
-		query map[string]string,
-		order []string,
-		offset int64,
-		limit int64,
-	) (responseCode int, results []types.OutputCategory, err error)
-	GetByID(ormer orm.Ormer, id int64) (responseCode int, result types.OutputCategory, err error)
-	UpdateByID(ormer orm.Ormer, id int64, category *types.InputUpdateCategory) (responseCode int, err error)
+	Add(context.Context, *types.InputAddCategory) (int64, error)
+	Delete(context.Context, int64) error
+	GetAll(context.Context, map[string]string, []string, int64, int64) ([]types.OutputCategory, error)
+	GetByID(context.Context, int64) (types.OutputCategory, error)
+	UpdateByID(context.Context, int64, *types.InputUpdateCategory) error
 }
 
 // CategoryService defines properties
 type CategoryService struct {
 	Storage storage.Storage
+	Orm     helper.OrmInterface
 }
 
 // NewCategoryService map properties storage and return CategoryService
 func NewCategoryService() (s CategoryService) {
 	s.Storage = storage.NewStorage()
+	s.Orm = helper.NewOrm()
 	return
 }
 
 // Add method for add a new category by InputAddCategory
 // Validate status and call to storage
-func (s CategoryService) Add(ormer orm.Ormer, input *types.InputAddCategory) (responseCode int, id int64, err error) {
-	errorMessage := "Please enter valid status, Must be either [Active|Inactive]"
-	responseCode = types.ResponseCode["BadRequest"]
-	var category = models.Category{}
-	// Map data input to model
-	copier.Copy(&category, &input)
-	indexStatus := int32(utils.IndexOf(input.Status, models.CategoryStatus))
-	if indexStatus < 0 {
+func (s CategoryService) Add(ctx context.Context, input *types.InputAddCategory) (id int64, err error) {
+	errorMessage := "Please enter valid status, Must be either [Active|Inactive]" // Init error message
+
+	var category = models.Category{} // Init variable category
+	copier.Copy(&category, &input)   // Map data input to model
+
+	indexStatus := int32(utils.IndexOf(input.Status, models.CategoryStatus)) // Get index from status(string)
+	if indexStatus < 0 {                                                     // Not found index from status(string)
 		err = errors.New(errorMessage)
-		ormer.Rollback()
 		return
 	}
-	category.Status = indexStatus
-	// Execute method Add
-	id, err = s.Storage.Category.Add(ormer, &category)
-	if err != nil {
+	category.Status = indexStatus                      // Set category status
+	ormer := s.Orm.NewOrms()                           // Declare ormer
+	ormer.BeginTx(ctx, &sql.TxOptions{})               // Begin transaction
+	id, err = s.Storage.Category.Add(ormer, &category) // Execute method Add
+	if id < 1 || err != nil {
 		ormer.Rollback()
 		return
 	}
 	err = ormer.Commit()
-	if id > 0 && err == nil {
-		responseCode = types.ResponseCode["CreatedSuccess"]
-	}
 	return
 }
 
 // Delete method delete category by ID
-func (s CategoryService) Delete(ormer orm.Ormer, id int64) (responseCode int, err error) {
+func (s CategoryService) Delete(ctx context.Context, id int64) (err error) {
 	errorMessage := "Not found"
-	responseCode = types.ResponseCode["Success"]
 	category := models.Category{
 		ID: id,
 	}
 	var num int64
+	ormer := s.Orm.NewOrms()
 	num, err = s.Storage.Category.Delete(ormer, &category)
 	if num < 1 {
 		err = errors.New(errorMessage)
-		responseCode = types.ResponseCode["BadRequest"]
 	}
 	return
 }
 
 // GetByID service for retrieve category BY ID
-func (s CategoryService) GetByID(ormer orm.Ormer, id int64) (responseCode int, result types.OutputCategory, err error) {
+func (s CategoryService) GetByID(ctx context.Context, id int64) (result types.OutputCategory, err error) {
+	ormer := s.Orm.NewOrms()
 	category, err := s.Storage.Category.GetByID(ormer, id)
+	if err != nil {
+		return
+	}
 	copier.Copy(&result, &category)
-	responseCode = types.ResponseCode["Success"]
 	return
 }
 
 // GetAll service for retrieves all Category matches certain condition
 func (s CategoryService) GetAll(
-	ormer orm.Ormer,
+	ctx context.Context,
 	query map[string]string,
 	order []string,
 	offset int64,
 	limit int64,
-) (responseCode int, results []types.OutputCategory, err error) {
+) (results []types.OutputCategory, err error) {
+	ormer := s.Orm.NewOrms()
 	categories, err := s.Storage.Category.GetAll(ormer, query, order, offset, limit)
 	copier.Copy(&results, &categories)
-	responseCode = types.ResponseCode["Success"]
 	return
 }
 
 // UpdateByID service for update category by ID and InputUpdateCategory
-func (s CategoryService) UpdateByID(ormer orm.Ormer, id int64, category *types.InputUpdateCategory) (responseCode int, err error) {
-	errorMessage := "Not found"
-	responseCode = types.ResponseCode["Success"]
+func (s CategoryService) UpdateByID(ctx context.Context, id int64, input *types.InputUpdateCategory) (err error) {
+	errorMessage := "Not found" // Init error message
+	ormer := s.Orm.NewOrms()
+	category, err := s.Storage.Category.GetByID(ormer, id)
 	m := models.Category{
-		ID:     id,
-		Name:   category.Name,
-		Detail: category.Detail,
+		ID:        id,
+		Name:      input.Name,
+		Detail:    input.Detail,
+		CreatedAt: category.CreatedAt,
 	}
 	num, err := s.Storage.Category.UpdateByID(ormer, &m)
-	if num < 1 {
+	if num < 1 || err != nil {
 		err = errors.New(errorMessage)
-		responseCode = types.ResponseCode["BadRequest"]
 	}
 	return
 }

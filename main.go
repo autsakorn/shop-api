@@ -3,6 +3,7 @@ package main
 import (
 	"shop-api/config"
 	"shop-api/controllers"
+	"shop-api/helper"
 	_ "shop-api/middleware"
 	_ "shop-api/routers"
 
@@ -13,7 +14,8 @@ import (
 
 func main() {
 	env, _ := config.FromEnv()
-	orm.RegisterDataBase("default", env.Driver, env.Sqlconn)
+	ormHelper := helper.NewOrm()
+	ormHelper.RegisterDataBase("default", env.Driver, env.Sqlconn)
 	beego.ErrorController(&controllers.ErrorController{})
 	if beego.BConfig.RunMode == "dev" { // Provides swagger and test coverage for dev environment
 		orm.Debug = true

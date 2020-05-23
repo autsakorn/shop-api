@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
-	"shop-api/helper"
 	"shop-api/services"
 	"shop-api/types"
 	"shop-api/utils"
@@ -31,25 +31,19 @@ func (c *CategoryController) URLMapping() {
 // @Description create Category
 // @Param	body		body 	types.InputAddCategory	true		"body for Category content"
 // @Success 201 {int}
-// @Failure 403 {int} body is empty
-// @Failure 400 {int} Bad Request
+// @Failure 400 {message: "string"}
 // @router / [post]
 func (c *CategoryController) Post() {
-	var v types.InputAddCategory
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	ormer := helper.NewOrm(true)
-	responseCode, id, err := c.CategoryService.Add(ormer, &v)
-	c.Ctx.Output.SetStatus(responseCode)
-	if err == nil {
-		c.Data["json"] = id
+	var v types.InputAddCategory                // Declare a variable input add category
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v) // Parses the JSON-encoded data and input struct
+	ctx := context.Background()                 // Declare a context
+	id, err := c.CategoryService.Add(ctx, &v)   // Call service method Add
+	if err != nil {
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
-		c.Data["json"] = err.Error()
+		c.Data["json"] = id
+		c.ServeJSON()
 	}
-	c.ServeJSON()
-}
-
-type response struct {
-	Message string `json:"message"`
 }
 
 // GetOne return the category by ID
@@ -57,20 +51,19 @@ type response struct {
 // @Description get Category by ID
 // @Param	id		path 	string	true		"The key for staticblock"
 // @Success 200 {object} types.OutputCategory
-// @Failure 403 :id is empty
+// @Failure 400 {message: "string"}
 // @router /:id [get]
 func (c *CategoryController) GetOne() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
-	ormer := helper.NewOrm(false)
-	responseCode, result, err := c.CategoryService.GetByID(ormer, id)
-	c.Ctx.Output.SetStatus(responseCode)
+	idStr := c.Ctx.Input.Param(":id")                 // Get id from param
+	id, _ := strconv.ParseInt(idStr, 0, 64)           // Convert id(string) to int64
+	ctx := context.Background()                       // Create a context
+	result, err := c.CategoryService.GetByID(ctx, id) // Call service method GetByID
 	if err != nil {
-		c.Data["json"] = err.Error()
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
 		c.Data["json"] = result
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
 
 // GetAll retrieves all Category matches certain condition
@@ -82,50 +75,38 @@ func (c *CategoryController) GetOne() {
 // @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
 // @Param	offset	query	string	false	"Start position of result set. Must be an integer"
 // @Success 200 {object} types.OutputCategory
-// @Failure 403 {string} string
-// @Header 403 {string} string
+// @Failure 400 {message: "string"}
 // @router / [get]
 func (c *CategoryController) GetAll() {
 	var limit int64 = 10
 	var offset int64
-	// limit: 10 (default is 10)
-	if v, err := c.GetInt64("limit"); err == nil {
+	if v, err := c.GetInt64("limit"); err == nil { // limit: 10 (default is 10)
 		limit = v
 	}
-	// offset: 0 (default is 0)
-	if v, err := c.GetInt64("offset"); err == nil {
+	if v, err := c.GetInt64("offset"); err == nil { // offset: 0 (default is 0)
 		offset = v
 	}
-
-	queryString := c.GetString("query")
+	queryString := c.GetString("query") // query: k:v,k:v
 	query, err := utils.TransformQueryGetAll(queryString)
-	if err != nil {
-		c.Data["json"] = err.Error()
-		c.Ctx.Output.SetStatus(types.ResponseCode["Forbidden"])
-		c.ServeJSON()
+	if err != nil { // Handle invalid form
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 		return
 	}
-	// sortby: col1,col2
-	sortbyString := c.GetString("sortby")
-	// order: desc,asc
-	orderString := c.GetString("order")
-	// query: k:v,k:v
+	sortbyString := c.GetString("sortby") // sortby: col1,col2
+	orderString := c.GetString("order")   // order: desc,asc
 	order, err := utils.TransFormSortFieldOrderGetAll(sortbyString, orderString)
-	if err != nil {
-		c.Data["json"] = err.Error()
-		c.Ctx.Output.SetStatus(types.ResponseCode["Forbidden"])
-		c.ServeJSON()
+	if err != nil { // Handle invalid form
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 		return
 	}
-	ormer := helper.NewOrm(false)
-	responseCode, results, err := c.CategoryService.GetAll(ormer, query, order, offset, limit)
-	c.Ctx.Output.SetStatus(responseCode)
+	ctx := context.Background()                                                // Create a context
+	results, err := c.CategoryService.GetAll(ctx, query, order, offset, limit) // Cal service method GetAll
 	if err != nil {
-		c.Data["json"] = err.Error()
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
 		c.Data["json"] = results
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
 
 // Put update category by ID
@@ -133,42 +114,40 @@ func (c *CategoryController) GetAll() {
 // @Description update the Category
 // @Param	id		path 	string	true		"The id you want to update"
 // @Param	body		body 	types.InputUpdateCategory	true		"body for Category content"
-// @Success 200 {object} models.Category
-// @Failure 403 :id is not int
+// @Success 200 "OK"
+// @Failure 400 {message: "string"}
 // @router /:id [put]
 func (c *CategoryController) Put() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
-	var v types.InputUpdateCategory
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	ormer := helper.NewOrm(false)
-	responseCode, err := c.CategoryService.UpdateByID(ormer, id, &v)
-	c.Ctx.Output.SetStatus(responseCode)
-	if err == nil {
-		c.Data["json"] = "OK"
+	idStr := c.Ctx.Input.Param(":id")                    // Get id from param and declare a idStr variable
+	id, _ := strconv.ParseInt(idStr, 0, 64)              // Convert idStr to id type int64
+	var input types.InputUpdateCategory                  // Declare input type InputUpdateCategory
+	json.Unmarshal(c.Ctx.Input.RequestBody, &input)      // Parses the JSON-encoded data and input struct
+	ctx := context.Background()                          // Declare context
+	err := c.CategoryService.UpdateByID(ctx, id, &input) // Call UpdateByID method
+	if err != nil {
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
-		c.Data["json"] = err.Error()
+		c.Data["json"] = "OK"
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
 
 // Delete category by ID
 // @Title Delete
 // @Description delete the Category
 // @Param	id		path 	string	true		"The id you want to delete"
-// @Success 200 {string} delete success!
-// @Failure 403 id is empty
+// @Success 200 "OK"
+// @Failure 400 {message: "string"}
 // @router /:id [delete]
 func (c *CategoryController) Delete() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
-	ormer := helper.NewOrm(false)
-	responseCode, err := c.CategoryService.Delete(ormer, id)
-	c.Ctx.Output.SetStatus(responseCode)
-	if err == nil {
-		c.Data["json"] = "OK"
+	idStr := c.Ctx.Input.Param(":id")        // Get id from param and declare a idStr variable
+	id, _ := strconv.ParseInt(idStr, 0, 64)  // Convert idStr to id type int64
+	ctx := context.Background()              // Declare context
+	err := c.CategoryService.Delete(ctx, id) // Call Delete method
+	if err != nil {
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
-		c.Data["json"] = err.Error()
+		c.Data["json"] = "OK"
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
