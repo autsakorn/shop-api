@@ -2,65 +2,40 @@ package services
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"shop-api/helper"
 	"shop-api/models"
 	"shop-api/storage"
 	"shop-api/types"
 
-	"github.com/astaxie/beego/orm"
 	"github.com/jinzhu/copier"
 )
 
 // Product represents all possible actions available for product services
 type Product interface {
-	Add(
-		ctx context.Context,
-		ormer orm.Ormer,
-		product types.InputAddProduct,
-	) (id int64, err error)
-	Delete(
-		ctx context.Context,
-		ormer orm.Ormer,
-		id int64,
-	) (err error)
-	GetByID(
-		ctx context.Context,
-		ormer orm.Ormer,
-		id int64,
-	) (product types.OutputProduct, err error)
-	GetAll(
-		ctx context.Context,
-		ormer orm.Ormer,
-		query map[string]string,
-		order []string,
-		offset int64,
-		limit int64,
-	) (results []types.OutputProduct, err error)
-	UpdateByID(
-		ctx context.Context,
-		ormer orm.Ormer,
-		id int64,
-		product *types.InputUpdateProduct,
-	) (err error)
+	Add(context.Context, types.InputAddProduct) (int64, error)
+	Delete(context.Context, int64) error
+	GetByID(context.Context, int64) (types.OutputProduct, error)
+	GetAll(context.Context, map[string]string, []string, int64, int64) ([]types.OutputProduct, error)
+	UpdateByID(context.Context, int64, *types.InputUpdateProduct) error
 }
 
 // ProductService defines propertie
 type ProductService struct {
 	Storage storage.Storage
+	Orm     helper.OrmInterface
 }
 
 // NewProductService map storage and return ProductService
 func NewProductService() (ps ProductService) {
 	ps.Storage = storage.NewStorage()
+	ps.Orm = helper.NewOrm()
 	return
 }
 
 // Add service for add a new product
-func (ps ProductService) Add(
-	ctx context.Context,
-	ormer orm.Ormer,
-	product types.InputAddProduct,
-) (id int64, err error) {
+func (ps ProductService) Add(ctx context.Context, product types.InputAddProduct) (id int64, err error) {
 	inputModel := models.Product{
 		Name:     product.Name,
 		Detail:   product.Detail,
@@ -73,22 +48,23 @@ func (ps ProductService) Add(
 			ID: product.Category.ID,
 		},
 	}
-	id, err = ps.Storage.Product.Add(ormer, &inputModel)
-	if id > 0 {
+	ormer := ps.Orm.NewOrms()                            // Declare ormer
+	ormer.BeginTx(ctx, &sql.TxOptions{})                 // Begin transaction
+	id, err = ps.Storage.Product.Add(ormer, &inputModel) // Execute method Add
+	if id < 1 || err != nil {
+		ormer.Rollback()
 		return
 	}
+	err = ormer.Commit()
 	return
 }
 
 // Delete service for delete product by ID
-func (ps ProductService) Delete(
-	ctx context.Context,
-	ormer orm.Ormer,
-	id int64,
-) (err error) {
+func (ps ProductService) Delete(ctx context.Context, id int64) (err error) {
 	modelProduct := models.Product{
 		ID: id,
 	}
+	ormer := ps.Orm.NewOrms()
 	num, err := ps.Storage.Product.Delete(ormer, &modelProduct)
 	if num < 1 {
 		errorMessage := "Not Found"
@@ -98,11 +74,8 @@ func (ps ProductService) Delete(
 }
 
 // GetByID service retrieve product by ID
-func (ps ProductService) GetByID(
-	ctx context.Context,
-	ormer orm.Ormer,
-	id int64,
-) (result types.OutputProduct, err error) {
+func (ps ProductService) GetByID(ctx context.Context, id int64) (result types.OutputProduct, err error) {
+	ormer := ps.Orm.NewOrms()
 	product, err := ps.Storage.Product.GetByID(ormer, id)
 	if err != nil {
 		return
@@ -114,24 +87,20 @@ func (ps ProductService) GetByID(
 // GetAll service for retrieves all product matches certain condition
 func (ps ProductService) GetAll(
 	ctx context.Context,
-	ormer orm.Ormer,
 	query map[string]string,
 	order []string,
 	offset int64,
 	limit int64,
 ) (results []types.OutputProduct, err error) {
+	ormer := ps.Orm.NewOrms()
 	products, err := ps.Storage.Product.GetAll(ormer, query, order, offset, limit)
 	copier.Copy(&results, &products)
 	return
 }
 
 // UpdateByID service for update product by ID
-func (ps ProductService) UpdateByID(
-	ctx context.Context,
-	ormer orm.Ormer,
-	id int64,
-	product *types.InputUpdateProduct,
-) (err error) {
+func (ps ProductService) UpdateByID(ctx context.Context, id int64, product *types.InputUpdateProduct) (err error) {
+	ormer := ps.Orm.NewOrms()
 	dataProduct, err := ps.Storage.Product.GetByID(ormer, id)
 	m := models.Product{
 		ID:        dataProduct.ID,

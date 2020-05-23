@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 )
 
 // ProductController operations for Product
@@ -35,11 +34,10 @@ func (c *ProductController) URLMapping() {
 // @Failure 400 {message: "string"}
 // @router / [post]
 func (c *ProductController) Post() {
-	var input types.InputAddProduct                    // Declare variable type input add product
-	json.Unmarshal(c.Ctx.Input.RequestBody, &input)    // Parses the JSON-encoded data and input struct
-	ormer := orm.NewOrm()                              // Declare a new orm
-	ctx := context.Background()                        // Declare a new ctx
-	id, err := c.ProductService.Add(ctx, ormer, input) // Call service method Add
+	var input types.InputAddProduct                 // Declare variable type input add product
+	json.Unmarshal(c.Ctx.Input.RequestBody, &input) // Parses the JSON-encoded data and input struct
+	ctx := context.Background()                     // Declare a new ctx
+	id, err := c.ProductService.Add(ctx, input)     // Call service method Add
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
@@ -56,11 +54,10 @@ func (c *ProductController) Post() {
 // @Failure 400 {message: "string"}
 // @router /:id [get]
 func (c *ProductController) GetOne() {
-	idStr := c.Ctx.Input.Param(":id")                       // Declare idStr and set equal param id
-	id, _ := strconv.ParseInt(idStr, 0, 64)                 // Convert idStr string to id int64
-	ormer := orm.NewOrm()                                   // Declare a new orm
-	ctx := context.Background()                             // Declare a new context
-	result, err := c.ProductService.GetByID(ctx, ormer, id) // Call method GetByID
+	idStr := c.Ctx.Input.Param(":id")                // Declare idStr and set equal param id
+	id, _ := strconv.ParseInt(idStr, 0, 64)          // Convert idStr string to id int64
+	ctx := context.Background()                      // Declare a new context
+	result, err := c.ProductService.GetByID(ctx, id) // Call method GetByID
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
@@ -103,9 +100,8 @@ func (c *ProductController) GetAll() {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 		return
 	}
-	ormer := orm.NewOrm()                                                            // Declare a new orm
-	ctx := context.Background()                                                      // Declare a new context
-	results, err := c.ProductService.GetAll(ctx, ormer, query, order, offset, limit) // Call method GetAll
+	ctx := context.Background()                                               // Declare a new context
+	results, err := c.ProductService.GetAll(ctx, query, order, offset, limit) // Call method GetAll
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
@@ -123,13 +119,12 @@ func (c *ProductController) GetAll() {
 // @Failure 400 {message: "string"}
 // @router /:id [put]
 func (c *ProductController) Put() {
-	idStr := c.Ctx.Input.Param(":id")                          // Declare idStr and set it equal param id
-	id, _ := strconv.ParseInt(idStr, 0, 64)                    // Declare id and convert idStr to id
-	var input types.InputUpdateProduct                         // Declare input type input update product
-	json.Unmarshal(c.Ctx.Input.RequestBody, &input)            // Parses the JSON-encoded data and input struct
-	ormer := orm.NewOrm()                                      // Declare a orm
-	ctx := context.Background()                                // Declare a context
-	err := c.ProductService.UpdateByID(ctx, ormer, id, &input) // Call method UpdateByID
+	idStr := c.Ctx.Input.Param(":id")                   // Declare idStr and set it equal param id
+	id, _ := strconv.ParseInt(idStr, 0, 64)             // Declare id and convert idStr to id
+	var input types.InputUpdateProduct                  // Declare input type input update product
+	json.Unmarshal(c.Ctx.Input.RequestBody, &input)     // Parses the JSON-encoded data and input struct
+	ctx := context.Background()                         // Declare a context
+	err := c.ProductService.UpdateByID(ctx, id, &input) // Call method UpdateByID
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
@@ -146,11 +141,10 @@ func (c *ProductController) Put() {
 // @Failure 400 {message: "string"}
 // @router /:id [delete]
 func (c *ProductController) Delete() {
-	idStr := c.Ctx.Input.Param(":id")              // Declare idStr and set equal id
-	id, _ := strconv.ParseInt(idStr, 0, 64)        // Declare id and convert idStr to id
-	ormer := orm.NewOrm()                          // Declare new orm
-	ctx := context.Background()                    // Declare a context
-	err := c.ProductService.Delete(ctx, ormer, id) // Call method Delete
+	idStr := c.Ctx.Input.Param(":id")       // Declare idStr and set equal id
+	id, _ := strconv.ParseInt(idStr, 0, 64) // Declare id and convert idStr to id
+	ctx := context.Background()             // Declare a context
+	err := c.ProductService.Delete(ctx, id) // Call method Delete
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {

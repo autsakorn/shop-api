@@ -9,11 +9,11 @@ import (
 
 // Category represents all possible actions available to deal with data
 type Category interface {
-	Add(ormer orm.Ormer, input *models.Category) (id int64, err error)
-	Delete(ormer orm.Ormer, input *models.Category) (num int64, err error)
-	GetAll(ormer orm.Ormer, query map[string]string, order []string, offset int64, limit int64) (result []models.Category, err error)
-	GetByID(ormer orm.Ormer, id int64) (result models.Category, err error)
-	UpdateByID(ormer orm.Ormer, input *models.Category) (num int64, err error)
+	Add(orm.Ormer, *models.Category) (int64, error)
+	Delete(orm.Ormer, *models.Category) (int64, error)
+	GetAll(orm.Ormer, map[string]string, []string, int64, int64) ([]models.Category, error)
+	GetByID(orm.Ormer, int64) (models.Category, error)
+	UpdateByID(orm.Ormer, *models.Category) (int64, error)
 }
 
 // CategoryStorage define properties CategoryStorage

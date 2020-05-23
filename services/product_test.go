@@ -4,29 +4,25 @@ import (
 	"context"
 	"errors"
 	"reflect"
-	"shop-api/config"
+	"shop-api/helper"
+	ormmock "shop-api/helper/orm_mock"
 	"shop-api/models"
 	"shop-api/storage"
-	"shop-api/storage/mock"
+	productmock "shop-api/storage/product_mock"
 	"shop-api/types"
 	"testing"
 	"time"
 
-	"github.com/astaxie/beego/orm"
 	"github.com/golang/mock/gomock"
 	_ "github.com/lib/pq"
 )
 
-func init() {
-	env, _ := config.FromEnv()
-	orm.RegisterDataBase("default", env.Driver, env.Sqlconn)
-}
 func TestNewProductService(t *testing.T) {
 	tests := []struct {
 		name   string
 		wantPs ProductService
 	}{
-		{"Base case", ProductService{Storage: storage.NewStorage()}},
+		{"Base case", ProductService{Storage: storage.NewStorage(), Orm: helper.NewOrm()}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -53,9 +49,8 @@ func TestProductService_Add(t *testing.T) {
 		fields       fields
 		args         args
 		mockResponse mockResponse
-
-		wantID  int64
-		wantErr bool
+		wantID       int64
+		wantErr      bool
 	}{
 		{
 			"Base case",
@@ -76,11 +71,13 @@ func TestProductService_Add(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+			ctx := context.Background()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := orm.NewOrm()
-			ctx := context.Background()
+			mackProduct := productmock.NewMockProduct(ctrl)
 			mackProduct.EXPECT().
 				Add(
 					ormer,
@@ -95,8 +92,9 @@ func TestProductService_Add(t *testing.T) {
 
 			ps := ProductService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			gotID, err := ps.Add(ctx, ormer, tt.args.product)
+			gotID, err := ps.Add(ctx, tt.args.product)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.Add() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -131,11 +129,13 @@ func TestProductService_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+			ctx := context.Background()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := orm.NewOrm()
-			ctx := context.Background()
+			mackProduct := productmock.NewMockProduct(ctrl)
 			mackProduct.EXPECT().
 				Delete(
 					ormer,
@@ -148,8 +148,9 @@ func TestProductService_Delete(t *testing.T) {
 
 			ps := ProductService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			err := ps.Delete(ctx, ormer, tt.args.id)
+			err := ps.Delete(ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.Delete() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -204,11 +205,13 @@ func TestProductService_GetByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+			ctx := context.Background()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := orm.NewOrm()
-			ctx := context.Background()
+			mackProduct := productmock.NewMockProduct(ctrl)
 			mackProduct.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
@@ -216,8 +219,9 @@ func TestProductService_GetByID(t *testing.T) {
 			tt.fields.Storage.Product = mackProduct
 			ps := ProductService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			gotResult, err := ps.GetByID(ctx, ormer, tt.args.id)
+			gotResult, err := ps.GetByID(ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.GetByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -262,11 +266,13 @@ func TestProductService_GetAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+			ctx := context.Background()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := orm.NewOrm()
-			ctx := context.Background()
+			mackProduct := productmock.NewMockProduct(ctrl)
 			mackProduct.EXPECT().
 				GetAll(ormer, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit).
 				AnyTimes().
@@ -274,8 +280,9 @@ func TestProductService_GetAll(t *testing.T) {
 			tt.fields.Storage.Product = mackProduct
 			ps := ProductService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			gotResults, err := ps.GetAll(ctx, ormer, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit)
+			gotResults, err := ps.GetAll(ctx, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.GetAll() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -324,11 +331,13 @@ func TestProductService_UpdateByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+			ctx := context.Background()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := mock.NewMockProduct(ctrl)
-			ormer := orm.NewOrm()
-			ctx := context.Background()
+			mackProduct := productmock.NewMockProduct(ctrl)
 			mackProduct.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
@@ -353,8 +362,9 @@ func TestProductService_UpdateByID(t *testing.T) {
 			tt.fields.Storage.Product = mackProduct
 			ps := ProductService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			err := ps.UpdateByID(ctx, ormer, tt.args.id, tt.args.product)
+			err := ps.UpdateByID(ctx, tt.args.id, tt.args.product)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductService.UpdateByID() error = %v, wantErr %v", err, tt.wantErr)
 				return

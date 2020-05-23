@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 )
 
 // CategoryController operations for Category
@@ -35,11 +34,11 @@ func (c *CategoryController) URLMapping() {
 // @Failure 400 {message: "string"}
 // @router / [post]
 func (c *CategoryController) Post() {
-	var v types.InputAddCategory                     // Declare a variable input add category
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)      // Parses the JSON-encoded data and input struct
-	ormer := orm.NewOrm()                            // Declare a new orm
-	ctx := context.Background()                      // Declare a context
-	id, err := c.CategoryService.Add(ctx, ormer, &v) // Call service method Add
+	var v types.InputAddCategory                // Declare a variable input add category
+	json.Unmarshal(c.Ctx.Input.RequestBody, &v) // Parses the JSON-encoded data and input struct
+	// ormHelper := helper.NewOrm()                         // Declare a new orm
+	ctx := context.Background()               // Declare a context
+	id, err := c.CategoryService.Add(ctx, &v) // Call service method Add
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
@@ -56,11 +55,10 @@ func (c *CategoryController) Post() {
 // @Failure 400 {message: "string"}
 // @router /:id [get]
 func (c *CategoryController) GetOne() {
-	idStr := c.Ctx.Input.Param(":id")                        // Get id from param
-	id, _ := strconv.ParseInt(idStr, 0, 64)                  // Convert id(string) to int64
-	ormer := orm.NewOrm()                                    // Create a new orm
-	ctx := context.Background()                              // Create a context
-	result, err := c.CategoryService.GetByID(ctx, ormer, id) // Call service method GetByID
+	idStr := c.Ctx.Input.Param(":id")                 // Get id from param
+	id, _ := strconv.ParseInt(idStr, 0, 64)           // Convert id(string) to int64
+	ctx := context.Background()                       // Create a context
+	result, err := c.CategoryService.GetByID(ctx, id) // Call service method GetByID
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
@@ -102,9 +100,8 @@ func (c *CategoryController) GetAll() {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 		return
 	}
-	ormer := orm.NewOrm()                                                             // Create a new orm
-	ctx := context.Background()                                                       // Create a context
-	results, err := c.CategoryService.GetAll(ctx, ormer, query, order, offset, limit) // Cal service method GetAll
+	ctx := context.Background()                                                // Create a context
+	results, err := c.CategoryService.GetAll(ctx, query, order, offset, limit) // Cal service method GetAll
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
@@ -122,13 +119,12 @@ func (c *CategoryController) GetAll() {
 // @Failure 400 {message: "string"}
 // @router /:id [put]
 func (c *CategoryController) Put() {
-	idStr := c.Ctx.Input.Param(":id")                           // Get id from param and declare a idStr variable
-	id, _ := strconv.ParseInt(idStr, 0, 64)                     // Convert idStr to id type int64
-	var input types.InputUpdateCategory                         // Declare input type InputUpdateCategory
-	json.Unmarshal(c.Ctx.Input.RequestBody, &input)             // Parses the JSON-encoded data and input struct
-	ormer := orm.NewOrm()                                       // Declare orm
-	ctx := context.Background()                                 // Declare context
-	err := c.CategoryService.UpdateByID(ctx, ormer, id, &input) // Call UpdateByID method
+	idStr := c.Ctx.Input.Param(":id")                    // Get id from param and declare a idStr variable
+	id, _ := strconv.ParseInt(idStr, 0, 64)              // Convert idStr to id type int64
+	var input types.InputUpdateCategory                  // Declare input type InputUpdateCategory
+	json.Unmarshal(c.Ctx.Input.RequestBody, &input)      // Parses the JSON-encoded data and input struct
+	ctx := context.Background()                          // Declare context
+	err := c.CategoryService.UpdateByID(ctx, id, &input) // Call UpdateByID method
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
@@ -145,11 +141,10 @@ func (c *CategoryController) Put() {
 // @Failure 400 {message: "string"}
 // @router /:id [delete]
 func (c *CategoryController) Delete() {
-	idStr := c.Ctx.Input.Param(":id")               // Get id from param and declare a idStr variable
-	id, _ := strconv.ParseInt(idStr, 0, 64)         // Convert idStr to id type int64
-	ormer := orm.NewOrm()                           // Declare orm
-	ctx := context.Background()                     // Declare context
-	err := c.CategoryService.Delete(ctx, ormer, id) // Call Delete method
+	idStr := c.Ctx.Input.Param(":id")        // Get id from param and declare a idStr variable
+	id, _ := strconv.ParseInt(idStr, 0, 64)  // Convert idStr to id type int64
+	ctx := context.Background()              // Declare context
+	err := c.CategoryService.Delete(ctx, id) // Call Delete method
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {

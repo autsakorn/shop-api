@@ -2,32 +2,27 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"reflect"
-	"shop-api/config"
+	"shop-api/helper"
+	ormmock "shop-api/helper/orm_mock"
 	"shop-api/models"
 	"shop-api/storage"
-	"shop-api/storage/mock"
+	categorymock "shop-api/storage/category_mock"
 	"shop-api/types"
 	"testing"
 	"time"
 
-	"github.com/astaxie/beego/orm"
 	"github.com/golang/mock/gomock"
 	_ "github.com/lib/pq"
 )
 
-func init() {
-	env, _ := config.FromEnv()
-	orm.RegisterDataBase("default", env.Driver, env.Sqlconn)
-}
 func TestNewCategoryService(t *testing.T) {
 	tests := []struct {
 		name  string
 		wantS CategoryService
 	}{
-		{"Base case", CategoryService{Storage: storage.NewStorage()}},
+		{"Base case", CategoryService{Storage: storage.NewStorage(), Orm: helper.NewOrm()}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -107,12 +102,13 @@ func TestCategoryService_Add(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := mock.NewMockCategory(ctrl)
-			ctx := context.Background()
-			ormer := orm.NewOrm()
-			ormer.BeginTx(ctx, &sql.TxOptions{})
+			mackCategory := categorymock.NewMockCategory(ctrl)
 			mackCategory.EXPECT().
 				Add(
 					ormer,
@@ -126,8 +122,9 @@ func TestCategoryService_Add(t *testing.T) {
 			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			gotID, err := s.Add(ctx, ormer, tt.args.input)
+			gotID, err := s.Add(ctx, tt.args.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CategoryService.Add() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -175,11 +172,13 @@ func TestCategoryService_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := mock.NewMockCategory(ctrl)
-			ormer := orm.NewOrm()
-			ctx := context.Background()
+			mackCategory := categorymock.NewMockCategory(ctrl)
 			mackCategory.EXPECT().
 				Delete(
 					ormer,
@@ -191,8 +190,9 @@ func TestCategoryService_Delete(t *testing.T) {
 			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			err := s.Delete(ctx, ormer, tt.args.id)
+			err := s.Delete(ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CategoryService.Delete() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -244,11 +244,13 @@ func TestCategoryService_GetByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := mock.NewMockCategory(ctrl)
-			ormer := orm.NewOrm()
-			ctx := context.Background()
+			mackCategory := categorymock.NewMockCategory(ctrl)
 			mackCategory.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
@@ -256,8 +258,9 @@ func TestCategoryService_GetByID(t *testing.T) {
 			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			gotResult, err := s.GetByID(ctx, ormer, tt.args.id)
+			gotResult, err := s.GetByID(ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CategoryService.GetByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -324,11 +327,13 @@ func TestCategoryService_GetAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := mock.NewMockCategory(ctrl)
-			ormer := orm.NewOrm()
-			ctx := context.Background()
+			mackCategory := categorymock.NewMockCategory(ctrl)
 			mackCategory.EXPECT().
 				GetAll(ormer, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit).
 				AnyTimes().
@@ -336,8 +341,9 @@ func TestCategoryService_GetAll(t *testing.T) {
 			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			gotResults, err := s.GetAll(ctx, ormer, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit)
+			gotResults, err := s.GetAll(ctx, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CategoryService.GetAll() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -386,17 +392,17 @@ func TestCategoryService_UpdateByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			ormMocked := ormmock.OrmMock{}
+			ormer := ormMocked.NewOrms()
+
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := mock.NewMockCategory(ctrl)
-			ormer := orm.NewOrm()
-			ctx := context.Background()
-
+			mackCategory := categorymock.NewMockCategory(ctrl)
 			mackCategory.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
 				Return(tt.mockResponse.result, tt.mockResponse.err)
-
 			mackCategory.EXPECT().
 				UpdateByID(
 					ormer,
@@ -410,8 +416,9 @@ func TestCategoryService_UpdateByID(t *testing.T) {
 			tt.fields.Storage.Category = mackCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
+				Orm:     ormMocked,
 			}
-			err := s.UpdateByID(ctx, ormer, tt.args.id, tt.args.category)
+			err := s.UpdateByID(ctx, tt.args.id, tt.args.category)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CategoryService.UpdateByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
