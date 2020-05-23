@@ -36,9 +36,8 @@ func (c *CategoryController) URLMapping() {
 func (c *CategoryController) Post() {
 	var v types.InputAddCategory                // Declare a variable input add category
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v) // Parses the JSON-encoded data and input struct
-	// ormHelper := helper.NewOrm()                         // Declare a new orm
-	ctx := context.Background()               // Declare a context
-	id, err := c.CategoryService.Add(ctx, &v) // Call service method Add
+	ctx := context.Background()                 // Declare a context
+	id, err := c.CategoryService.Add(ctx, &v)   // Call service method Add
 	if err != nil {
 		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
