@@ -57,8 +57,8 @@
                             "$ref": "#/definitions/types.OutputCategory"
                         }
                     },
-                    "403": {
-                        "description": "{string} string"
+                    "400": {
+                        "description": "{message: \"string\"}"
                     }
                 }
             },
@@ -84,10 +84,7 @@
                         "description": "{int}"
                     },
                     "400": {
-                        "description": "{int} Bad Request"
-                    },
-                    "403": {
-                        "description": "{int} body is empty"
+                        "description": "{message: \"string\"}"
                     }
                 }
             }
@@ -115,8 +112,8 @@
                             "$ref": "#/definitions/types.OutputCategory"
                         }
                     },
-                    "403": {
-                        "description": ":id is empty"
+                    "400": {
+                        "description": "{message: \"string\"}"
                     }
                 }
             },
@@ -146,13 +143,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.Category"
-                        }
+                        "description": "\"OK\""
                     },
-                    "403": {
-                        "description": ":id is not int"
+                    "400": {
+                        "description": "{message: \"string\"}"
                     }
                 }
             },
@@ -173,10 +167,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "{string} delete success!"
+                        "description": "\"OK\""
                     },
-                    "403": {
-                        "description": "id is empty"
+                    "400": {
+                        "description": "{message: \"string\"}"
                     }
                 }
             }
@@ -227,8 +221,8 @@
                             "$ref": "#/definitions/types.OutputProduct"
                         }
                     },
-                    "403": {
-                        "description": ""
+                    "400": {
+                        "description": "{message: \"string\"}"
                     }
                 }
             },
@@ -253,8 +247,8 @@
                     "201": {
                         "description": "{int}"
                     },
-                    "403": {
-                        "description": "body is empty"
+                    "400": {
+                        "description": "{message: \"string\"}"
                     }
                 }
             }
@@ -282,8 +276,8 @@
                             "$ref": "#/definitions/types.OutputProduct"
                         }
                     },
-                    "403": {
-                        "description": ":id is empty"
+                    "400": {
+                        "description": "{message: \"string\"}"
                     }
                 }
             },
@@ -313,13 +307,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/models.Product"
-                        }
+                        "description": "{\"OK\"}"
                     },
-                    "403": {
-                        "description": ":id is not int"
+                    "400": {
+                        "description": "{message: \"string\"}"
                     }
                 }
             },
@@ -340,89 +331,16 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "{string} delete success!"
+                        "description": "\"OK\""
                     },
-                    "403": {
-                        "description": "id is empty"
+                    "400": {
+                        "description": "{message: \"string\"}"
                     }
                 }
             }
         }
     },
     "definitions": {
-        "models.Category": {
-            "title": "Category",
-            "type": "object",
-            "properties": {
-                "CreatedAt": {
-                    "type": "string",
-                    "format": "datetime"
-                },
-                "Detail": {
-                    "type": "string"
-                },
-                "ID": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "Name": {
-                    "type": "string"
-                },
-                "Status": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "UpdatedAt": {
-                    "type": "string",
-                    "format": "datetime"
-                }
-            }
-        },
-        "models.Product": {
-            "title": "Product",
-            "type": "object",
-            "properties": {
-                "Brand": {
-                    "type": "string"
-                },
-                "Category": {
-                    "$ref": "#/definitions/models.Category"
-                },
-                "Cost": {
-                    "type": "number",
-                    "format": "double"
-                },
-                "CreatedAt": {
-                    "type": "string",
-                    "format": "datetime"
-                },
-                "Detail": {
-                    "type": "string"
-                },
-                "ID": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "Model": {
-                    "type": "string"
-                },
-                "Name": {
-                    "type": "string"
-                },
-                "Price": {
-                    "type": "number",
-                    "format": "double"
-                },
-                "Quantity": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "UpdatedAt": {
-                    "type": "string",
-                    "format": "datetime"
-                }
-            }
-        },
         "types.InputAddCategory": {
             "title": "InputAddCategory",
             "type": "object",
@@ -594,7 +512,7 @@
         },
         {
             "name": "error",
-            "description": "ErrorController ...\n"
+            "description": "ErrorController handle abort error\n"
         }
     ]
 }

@@ -40,8 +40,8 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/types.OutputCategory'
-        "403":
-          description: '{string} string'
+        "400":
+          description: '{message: "string"}'
     post:
       tags:
       - category
@@ -58,9 +58,7 @@ paths:
         "201":
           description: '{int}'
         "400":
-          description: '{int} Bad Request'
-        "403":
-          description: '{int} body is empty'
+          description: '{message: "string"}'
   /category/{id}:
     get:
       tags:
@@ -78,8 +76,8 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/types.OutputCategory'
-        "403":
-          description: :id is empty
+        "400":
+          description: '{message: "string"}'
     put:
       tags:
       - category
@@ -99,11 +97,9 @@ paths:
           $ref: '#/definitions/types.InputUpdateCategory'
       responses:
         "200":
-          description: ""
-          schema:
-            $ref: '#/definitions/models.Category'
-        "403":
-          description: :id is not int
+          description: '"OK"'
+        "400":
+          description: '{message: "string"}'
     delete:
       tags:
       - category
@@ -117,9 +113,9 @@ paths:
         type: string
       responses:
         "200":
-          description: '{string} delete success!'
-        "403":
-          description: id is empty
+          description: '"OK"'
+        "400":
+          description: '{message: "string"}'
   /product/:
     get:
       tags:
@@ -153,8 +149,8 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/types.OutputProduct'
-        "403":
-          description: ""
+        "400":
+          description: '{message: "string"}'
     post:
       tags:
       - product
@@ -170,8 +166,8 @@ paths:
       responses:
         "201":
           description: '{int}'
-        "403":
-          description: body is empty
+        "400":
+          description: '{message: "string"}'
   /product/{id}:
     get:
       tags:
@@ -189,8 +185,8 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/types.OutputProduct'
-        "403":
-          description: :id is empty
+        "400":
+          description: '{message: "string"}'
     put:
       tags:
       - product
@@ -210,11 +206,9 @@ paths:
           $ref: '#/definitions/types.InputUpdateProduct'
       responses:
         "200":
-          description: ""
-          schema:
-            $ref: '#/definitions/models.Product'
-        "403":
-          description: :id is not int
+          description: '{"OK"}'
+        "400":
+          description: '{message: "string"}'
     delete:
       tags:
       - product
@@ -228,62 +222,10 @@ paths:
         type: string
       responses:
         "200":
-          description: '{string} delete success!'
-        "403":
-          description: id is empty
+          description: '"OK"'
+        "400":
+          description: '{message: "string"}'
 definitions:
-  models.Category:
-    title: Category
-    type: object
-    properties:
-      CreatedAt:
-        type: string
-        format: datetime
-      Detail:
-        type: string
-      ID:
-        type: integer
-        format: int64
-      Name:
-        type: string
-      Status:
-        type: integer
-        format: int32
-      UpdatedAt:
-        type: string
-        format: datetime
-  models.Product:
-    title: Product
-    type: object
-    properties:
-      Brand:
-        type: string
-      Category:
-        $ref: '#/definitions/models.Category'
-      Cost:
-        type: number
-        format: double
-      CreatedAt:
-        type: string
-        format: datetime
-      Detail:
-        type: string
-      ID:
-        type: integer
-        format: int64
-      Model:
-        type: string
-      Name:
-        type: string
-      Price:
-        type: number
-        format: double
-      Quantity:
-        type: integer
-        format: int64
-      UpdatedAt:
-        type: string
-        format: datetime
   types.InputAddCategory:
     title: InputAddCategory
     type: object
@@ -403,4 +345,4 @@ tags:
     ProductController operations for Product
 - name: error
   description: |
-    ErrorController ...
+    ErrorController handle abort error

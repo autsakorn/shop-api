@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
-	"shop-api/helper"
 	"shop-api/services"
 	"shop-api/types"
 	"shop-api/utils"
@@ -31,20 +31,19 @@ func (c *ProductController) URLMapping() {
 // @Description create Product
 // @Param	body		body 	types.InputAddProduct	true		"body for Product content"
 // @Success 201 {int}
-// @Failure 403 body is empty
+// @Failure 400 {message: "string"}
 // @router / [post]
 func (c *ProductController) Post() {
-	var v types.InputAddProduct
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	ormer := helper.NewOrm(false)
-	responseCode, id, err := c.ProductService.Add(ormer, v)
-	c.Ctx.Output.SetStatus(responseCode)
-	if err == nil {
-		c.Data["json"] = id
+	var input types.InputAddProduct                 // Declare variable type input add product
+	json.Unmarshal(c.Ctx.Input.RequestBody, &input) // Parses the JSON-encoded data and input struct
+	ctx := context.Background()                     // Declare a new ctx
+	id, err := c.ProductService.Add(ctx, input)     // Call service method Add
+	if err != nil {
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
-		c.Data["json"] = err.Error()
+		c.Data["json"] = id
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
 
 // GetOne return the product by ID
@@ -52,20 +51,19 @@ func (c *ProductController) Post() {
 // @Description get Product by id
 // @Param	id		path 	string	true		"The key for staticblock"
 // @Success 200 {object} types.OutputProduct
-// @Failure 403 :id is empty
+// @Failure 400 {message: "string"}
 // @router /:id [get]
 func (c *ProductController) GetOne() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
-	ormer := helper.NewOrm(false)
-	responseCode, result, err := c.ProductService.GetByID(ormer, id)
-	c.Ctx.Output.SetStatus(responseCode)
+	idStr := c.Ctx.Input.Param(":id")                // Declare idStr and set equal param id
+	id, _ := strconv.ParseInt(idStr, 0, 64)          // Convert idStr string to id int64
+	ctx := context.Background()                      // Declare a new context
+	result, err := c.ProductService.GetByID(ctx, id) // Call method GetByID
 	if err != nil {
-		c.Data["json"] = err.Error()
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
 		c.Data["json"] = result
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
 
 // GetAll retrieves all product matches certain condition
@@ -77,48 +75,39 @@ func (c *ProductController) GetOne() {
 // @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
 // @Param	offset	query	string	false	"Start position of result set. Must be an integer"
 // @Success 200 {object} types.OutputProduct
-// @Failure 403
+// @Failure 400 {message: "string"}
 // @router / [get]
 func (c *ProductController) GetAll() {
 	var limit int64 = 10
 	var offset int64
-	// limit: 10 (default is 10)
-	if v, err := c.GetInt64("limit"); err == nil {
+
+	if v, err := c.GetInt64("limit"); err == nil { // limit: 10 (default is 10)
 		limit = v
 	}
-	// offset: 0 (default is 0)
-	if v, err := c.GetInt64("offset"); err == nil {
+	if v, err := c.GetInt64("offset"); err == nil { // offset: 0 (default is 0)
 		offset = v
 	}
-	queryString := c.GetString("query")
+	queryString := c.GetString("query") // query: k:v,k:v
 	query, err := utils.TransformQueryGetAll(queryString)
 	if err != nil {
-		c.Data["json"] = err.Error()
-		c.Ctx.Output.SetStatus(types.ResponseCode["Forbidden"])
-		c.ServeJSON()
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 		return
 	}
-	// sortby: col1,col2
-	sortbyString := c.GetString("sortby")
-	// order: desc,asc
-	orderString := c.GetString("order")
-	// query: k:v,k:v
+	sortbyString := c.GetString("sortby") // sortby: col1,col2
+	orderString := c.GetString("order")   // order: desc,asc
 	order, err := utils.TransFormSortFieldOrderGetAll(sortbyString, orderString)
 	if err != nil {
-		c.Data["json"] = err.Error()
-		c.Ctx.Output.SetStatus(types.ResponseCode["Forbidden"])
-		c.ServeJSON()
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 		return
 	}
-	ormer := helper.NewOrm(false)
-	responseCode, results, err := c.ProductService.GetAll(ormer, query, order, offset, limit)
-	c.Ctx.Output.SetStatus(responseCode)
+	ctx := context.Background()                                               // Declare a new context
+	results, err := c.ProductService.GetAll(ctx, query, order, offset, limit) // Call method GetAll
 	if err != nil {
-		c.Data["json"] = err.Error()
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
 		c.Data["json"] = results
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
 
 // Put update product by ID
@@ -126,42 +115,40 @@ func (c *ProductController) GetAll() {
 // @Description update the Product
 // @Param	id		path 	string	true		"The id you want to update"
 // @Param	body		body 	types.InputUpdateProduct	true		"body for Product content"
-// @Success 200 {object} models.Product
-// @Failure 403 :id is not int
+// @Success 200 {"OK"}
+// @Failure 400 {message: "string"}
 // @router /:id [put]
 func (c *ProductController) Put() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
-	var input types.InputUpdateProduct
-	json.Unmarshal(c.Ctx.Input.RequestBody, &input)
-	ormer := helper.NewOrm(false)
-	responseCode, err := c.ProductService.UpdateByID(ormer, id, &input)
-	c.Ctx.Output.SetStatus(responseCode)
-	if err == nil {
-		c.Data["json"] = "OK"
+	idStr := c.Ctx.Input.Param(":id")                   // Declare idStr and set it equal param id
+	id, _ := strconv.ParseInt(idStr, 0, 64)             // Declare id and convert idStr to id
+	var input types.InputUpdateProduct                  // Declare input type input update product
+	json.Unmarshal(c.Ctx.Input.RequestBody, &input)     // Parses the JSON-encoded data and input struct
+	ctx := context.Background()                         // Declare a context
+	err := c.ProductService.UpdateByID(ctx, id, &input) // Call method UpdateByID
+	if err != nil {
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
-		c.Data["json"] = err.Error()
+		c.Data["json"] = "OK"
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
 
 // Delete product by ID
 // @Title Delete
 // @Description delete the Product
 // @Param	id		path 	string	true		"The id you want to delete"
-// @Success 200 {string} delete success!
-// @Failure 403 id is empty
+// @Success 200 "OK"
+// @Failure 400 {message: "string"}
 // @router /:id [delete]
 func (c *ProductController) Delete() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
-	ormer := helper.NewOrm(false)
-	responseCdoe, err := c.ProductService.Delete(ormer, id)
-	c.Ctx.Output.SetStatus(responseCdoe)
-	if err == nil {
-		c.Data["json"] = id
+	idStr := c.Ctx.Input.Param(":id")       // Declare idStr and set equal id
+	id, _ := strconv.ParseInt(idStr, 0, 64) // Declare id and convert idStr to id
+	ctx := context.Background()             // Declare a context
+	err := c.ProductService.Delete(ctx, id) // Call method Delete
+	if err != nil {
+		c.Ctx.Input.SetParam("errMessage", err.Error())
 	} else {
-		c.Data["json"] = err.Error()
+		c.Data["json"] = "OK"
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
