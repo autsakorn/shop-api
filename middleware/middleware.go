@@ -2,7 +2,6 @@ package middleware
 
 import (
 	ctxContext "context"
-	"fmt"
 	"shop-api/services"
 	"shop-api/types"
 
@@ -27,7 +26,6 @@ var corsOption = &cors.Options{
 }
 
 var auth = func(ctx *context.Context) {
-	fmt.Println("X-API-KEY", ctx.Request.Header.Get("X-API-KEY"))
 	xAPIKey := ctx.Request.Header.Get("X-API-KEY")
 	clientService := services.NewClientService()
 	ctxBackground := ctxContext.Background()
