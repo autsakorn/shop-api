@@ -224,7 +224,12 @@
                     "400": {
                         "description": "{message: \"string\"}"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -250,7 +255,12 @@
                     "400": {
                         "description": "{message: \"string\"}"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
             }
         },
         "/product/{id}": {
@@ -279,7 +289,12 @@
                     "400": {
                         "description": "{message: \"string\"}"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -312,7 +327,12 @@
                     "400": {
                         "description": "{message: \"string\"}"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -336,7 +356,12 @@
                     "400": {
                         "description": "{message: \"string\"}"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
             }
         }
     },
@@ -498,6 +523,14 @@
                     "format": "int64"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "apiKey": {
+            "type": "apiKey",
+            "description": "APIKey",
+            "name": "X-API-KEY",
+            "in": "header"
         }
     },
     "tags": [

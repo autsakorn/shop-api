@@ -36,7 +36,7 @@ type product = struct {
 
 // Up Run the migrations
 func (m *ExampleProduct_20200525_072315) Up() {
-	jsonFile, err := os.Open("../fixtures/product.json")
+	jsonFile, err := os.Open("../fixtures/product_initial.json")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -83,7 +83,7 @@ func (m *ExampleProduct_20200525_072315) Up() {
 
 // Down Reverse the migrations
 func (m *ExampleProduct_20200525_072315) Down() {
-	jsonFile, err := os.Open("../fixtures/product.json")
+	jsonFile, err := os.Open("../fixtures/product_initial.json")
 	if err != nil {
 		fmt.Println(err)
 	}

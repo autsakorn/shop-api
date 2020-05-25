@@ -97,3 +97,11 @@ We need to execute via docker, generate migration file, put SQL command and run 
 2. `bee generate migration client -fields="name:string,api_key:string,created_at:datetime,updated_at:datetime"`
 3. Find your generated file in `database/migrations` and recheck your SQL command and you can change it
 4. Final step run the migrate file by `bee migrate -driver=$DRIVER -conn=$SQLCONN`
+
+### Generate Mock 
+Example generate mock
+`mockgen -destination ./storage/client_mock/client_mock.go -source storage/client.go -package clientmock Client`
+
+### Generate Test 
+Example generate test
+`gotests -all -w services/client.go`

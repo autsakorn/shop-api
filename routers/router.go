@@ -4,6 +4,7 @@
 // @Description documents for Shop API
 // @Schemes http
 // @BasePath /v1
+// @SecurityDefinition apiKey apiKey X-API-KEY header APIKey
 package routers
 
 import (

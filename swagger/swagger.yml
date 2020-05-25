@@ -151,6 +151,8 @@ paths:
             $ref: '#/definitions/types.OutputProduct'
         "400":
           description: '{message: "string"}'
+      security:
+      - apiKey: []
     post:
       tags:
       - product
@@ -168,6 +170,8 @@ paths:
           description: '{int}'
         "400":
           description: '{message: "string"}'
+      security:
+      - apiKey: []
   /product/{id}:
     get:
       tags:
@@ -187,6 +191,8 @@ paths:
             $ref: '#/definitions/types.OutputProduct'
         "400":
           description: '{message: "string"}'
+      security:
+      - apiKey: []
     put:
       tags:
       - product
@@ -209,6 +215,8 @@ paths:
           description: '{"OK"}'
         "400":
           description: '{message: "string"}'
+      security:
+      - apiKey: []
     delete:
       tags:
       - product
@@ -225,6 +233,8 @@ paths:
           description: '"OK"'
         "400":
           description: '{message: "string"}'
+      security:
+      - apiKey: []
 definitions:
   types.InputAddCategory:
     title: InputAddCategory
@@ -335,6 +345,12 @@ definitions:
       id:
         type: integer
         format: int64
+securityDefinitions:
+  apiKey:
+    type: apiKey
+    description: APIKey
+    name: X-API-KEY
+    in: header
 tags:
 - name: category
   description: |
