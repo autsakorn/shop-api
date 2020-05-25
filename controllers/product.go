@@ -33,6 +33,7 @@ func (c *ProductController) URLMapping() {
 // @Success 201 {int}
 // @Failure 400 {message: "string"}
 // @router / [post]
+// @Security apiKey
 func (c *ProductController) Post() {
 	var input types.InputAddProduct                 // Declare variable type input add product
 	json.Unmarshal(c.Ctx.Input.RequestBody, &input) // Parses the JSON-encoded data and input struct
@@ -53,6 +54,7 @@ func (c *ProductController) Post() {
 // @Success 200 {object} types.OutputProduct
 // @Failure 400 {message: "string"}
 // @router /:id [get]
+// @Security apiKey
 func (c *ProductController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")                // Declare idStr and set equal param id
 	id, _ := strconv.ParseInt(idStr, 0, 64)          // Convert idStr string to id int64
@@ -77,6 +79,7 @@ func (c *ProductController) GetOne() {
 // @Success 200 {object} types.OutputProduct
 // @Failure 400 {message: "string"}
 // @router / [get]
+// @Security apiKey
 func (c *ProductController) GetAll() {
 	var limit int64 = 10
 	var offset int64
@@ -118,6 +121,7 @@ func (c *ProductController) GetAll() {
 // @Success 200 {"OK"}
 // @Failure 400 {message: "string"}
 // @router /:id [put]
+// @Security apiKey
 func (c *ProductController) Put() {
 	idStr := c.Ctx.Input.Param(":id")                   // Declare idStr and set it equal param id
 	id, _ := strconv.ParseInt(idStr, 0, 64)             // Declare id and convert idStr to id
@@ -140,6 +144,7 @@ func (c *ProductController) Put() {
 // @Success 200 "OK"
 // @Failure 400 {message: "string"}
 // @router /:id [delete]
+// @Security apiKey
 func (c *ProductController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")       // Declare idStr and set equal id
 	id, _ := strconv.ParseInt(idStr, 0, 64) // Declare id and convert idStr to id

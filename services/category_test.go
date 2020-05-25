@@ -101,14 +101,16 @@ func TestCategoryService_Add(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ctx := context.Background()
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 
+			// Mock storage method
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := categorymock.NewMockCategory(ctrl)
-			mackCategory.EXPECT().
+			mockCategory := categorymock.NewMockCategory(ctrl)
+			mockCategory.EXPECT().
 				Add(
 					ormer,
 					&models.Category{
@@ -118,7 +120,9 @@ func TestCategoryService_Add(t *testing.T) {
 					}).
 				AnyTimes().
 				Return(tt.mockResponse.id, tt.mockResponse.err)
-			tt.fields.Storage.Category = mackCategory
+
+			// Set properties serivce
+			tt.fields.Storage.Category = mockCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 				Orm:     ormMocked,
@@ -170,14 +174,16 @@ func TestCategoryService_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ctx := context.Background()
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 
+			// Mock storage method
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := categorymock.NewMockCategory(ctrl)
-			mackCategory.EXPECT().
+			mockCategory := categorymock.NewMockCategory(ctrl)
+			mockCategory.EXPECT().
 				Delete(
 					ormer,
 					&models.Category{
@@ -185,7 +191,9 @@ func TestCategoryService_Delete(t *testing.T) {
 					}).
 				AnyTimes().
 				Return(tt.mockResponse.num, tt.mockResponse.err)
-			tt.fields.Storage.Category = mackCategory
+
+			// Set properties serivce
+			tt.fields.Storage.Category = mockCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 				Orm:     ormMocked,
@@ -242,18 +250,22 @@ func TestCategoryService_GetByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ctx := context.Background()
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 
+			// Mock storage method
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := categorymock.NewMockCategory(ctrl)
-			mackCategory.EXPECT().
+			mockCategory := categorymock.NewMockCategory(ctrl)
+			mockCategory.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
 				Return(tt.mockResponse.result, tt.mockResponse.err)
-			tt.fields.Storage.Category = mackCategory
+
+			// Set properties serivce
+			tt.fields.Storage.Category = mockCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 				Orm:     ormMocked,
@@ -325,18 +337,22 @@ func TestCategoryService_GetAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ctx := context.Background()
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 
+			// Mock storage method
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := categorymock.NewMockCategory(ctrl)
-			mackCategory.EXPECT().
+			mockCategory := categorymock.NewMockCategory(ctrl)
+			mockCategory.EXPECT().
 				GetAll(ormer, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit).
 				AnyTimes().
 				Return(tt.mockResponse.result, tt.mockResponse.err)
-			tt.fields.Storage.Category = mackCategory
+
+			// Set properties serivce
+			tt.fields.Storage.Category = mockCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 				Orm:     ormMocked,
@@ -401,18 +417,20 @@ func TestCategoryService_UpdateByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ctx := context.Background()
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 
+			// Mock storage method
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackCategory := categorymock.NewMockCategory(ctrl)
-			mackCategory.EXPECT().
+			mockCategory := categorymock.NewMockCategory(ctrl)
+			mockCategory.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
 				Return(tt.mockResponse.result, tt.mockResponse.err)
-			mackCategory.EXPECT().
+			mockCategory.EXPECT().
 				UpdateByID(
 					ormer,
 					&models.Category{
@@ -423,7 +441,9 @@ func TestCategoryService_UpdateByID(t *testing.T) {
 					}).
 				AnyTimes().
 				Return(tt.mockResponse.num, tt.mockResponse.err)
-			tt.fields.Storage.Category = mackCategory
+
+			// Set properties serivce
+			tt.fields.Storage.Category = mockCategory
 			s := CategoryService{
 				Storage: tt.fields.Storage,
 				Orm:     ormMocked,

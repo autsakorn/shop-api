@@ -20,7 +20,7 @@ func init() {
 // Up Run the migrations
 func (m *Category_20200515_133557) Up() {
 	// use m.SQL("CREATE TABLE ...") to make schema update
-	m.SQL("CREATE TABLE category(id serial primary key,name TEXT NOT NULL, detail TEXT NOT NULL)")
+	m.SQL("CREATE TABLE category(id serial primary key,name varchar(255) NOT NULL, detail TEXT NOT NULL)")
 }
 
 // Down Reverse the migrations

@@ -29,7 +29,7 @@ type category = struct {
 
 // Up Run the migrations
 func (m *SeedCategory_20200515_140537) Up() {
-	jsonFile, err := os.Open("../fixtures/category.json")
+	jsonFile, err := os.Open("../fixtures/category_initial.json")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -48,7 +48,7 @@ func (m *SeedCategory_20200515_140537) Up() {
 
 // Down Reverse the migrations
 func (m *SeedCategory_20200515_140537) Down() {
-	jsonFile, err := os.Open("../fixtures/category.json")
+	jsonFile, err := os.Open("../fixtures/category_initial.json")
 	if err != nil {
 		fmt.Println(err)
 	}
