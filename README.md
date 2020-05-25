@@ -115,6 +115,7 @@ This repo, I use the tools listed below.
 - https://github.com/beego/bee
 - https://github.com/cweill/gotests
 - https://github.com/golang/mock/
-optional
+
+optional libs
 - github.com/axw/gocov
 - github.com/smartystreets/goconvey
