@@ -61,23 +61,23 @@ The model layer is the same as entities, This layer will store entities Objectâ€
 ### Communications Between Layer
 
 ``` text
-     +------------+         +------------+           2. GetByEmail       +---------------+    +---------------+
-     |            |         |            |------------------------------>|    Storage    |    |     Model     |
-     | Controller |         |  Service   |           3. return           |       A       |--->|       A       |
-     |            |         |            |<------------------------------|               |    |               |
-     |   GET      |         |  4.logic   |                               +---------------+    +---------------+
-     |   POST     |         | - Map data |
-     |   PUT      |         | - Validate |           5. Add              +---------------+    +---------------+
-     |   DELETE   |    1    | - Handle   |------------------------------>|    Storage    |    |     Model     |
-     |            | ------> |   status   |           6. return           |       B       |--->|       B       |
-     | Middleware |         |            |<------------------------------|               |    |               |
-     | Get params |         |            |                               +---------------+    +---------------+
-     | Get body   |         |            |
-     | Response   |         |            |              ...              +---------------+    +---------------+
-     |            |         |            |------------------------------>|    Storage    |    |     Model     |
-     |            |         |            |                               |       C       |--->|       C       |
-     |            |         |            |<------------------------------|               |    |               |
-     +------------+         +------------+                               +---------------+    +---------------+
+  +------------+         +------------+           2. GetByEmail       +---------------+    +---------------+
+  |            |         |            |------------------------------>|    Storage    |    |     Model     |
+  | Controller |         |  Service   |           3. return           |       A       |--->|       A       |
+  |            |         |            |<------------------------------|               |    |               |
+  |   GET      |         |  4.logic   |                               +---------------+    +---------------+
+  |   POST     |         |            |
+  |   PUT      |         |            |           5. Add              +---------------+    +---------------+
+  |   DELETE   |    1    |            |------------------------------>|    Storage    |    |     Model     |
+  |            | ------> |            |           6. return           |       B       |--->|       B       |
+  | Middleware |         | - Map data |<------------------------------|               |    |               |
+  | Get params |         | - Validate |                               +---------------+    +---------------+
+  | Get body   |         | - Call util|
+  | Response   |         |            |              ...              +---------------+    +---------------+
+  |            |         |            |------------------------------>|    Storage    |    |     Model     |
+  |            |         |            |                               |       C       |--->|       C       |
+  |            |         |            |<------------------------------|               |    |               |
+  +------------+         +------------+                               +---------------+    +---------------+
 ```
 
 Each layer will communicate through an interface. For example, The Service layer needs the Storage layer, The Storage will provide an interface to be their actions available or method. The service method can call more one the storage method
@@ -103,11 +103,11 @@ This is an example command to migrate
 
 ### Generate Mock 
 Example generate mock
-`mockgen -destination ./storage/client_mock/client_mock.go -source storage/client.go -package clientmock Client`
+- `mockgen -destination ./storage/client_mock/client_mock.go -source storage/client.go -package clientmock Client`
 
 ### Generate Test 
 Example generate test
-`gotests -all -w services/client.go`
+- `gotests -all -w services/client.go`
 
 ### Tools Used
 This repo, I use the tools listed below.
@@ -115,6 +115,7 @@ This repo, I use the tools listed below.
 - https://github.com/beego/bee
 - https://github.com/cweill/gotests
 - https://github.com/golang/mock/
-optional
+
+optional libs
 - github.com/axw/gocov
 - github.com/smartystreets/goconvey
