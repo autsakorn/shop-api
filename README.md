@@ -26,15 +26,15 @@ If you need to roll back the database
 
 ## Test
 You can run unit test by the command
-- `go test ./... -cover`
+- `go test ./services ./models ./utils -cover`
   
 If you want to see test coverage detail 3 step
 
-1. `go test -coverprofile=coverage/cover.out ./... -cover`
+1. `go test -coverprofile=coverage/cover.out ./services ./models ./utils -cover`
 2. `go tool cover -html=coverage/cover.out -o coverage/index.html`
 3. Open your browser and go to http://localhost:8081/coverage
 
-## Description
+## Description layers
 This is an example of the implementation of web API in Golang, by separating the application into layers. you will create a testable system. When any of the external parts of the system become obsolete, like the database, you can swap, your business rules are not bound to the database
 
 This project has 4 layers:
@@ -86,3 +86,14 @@ Same with the Controller layer, the Service layer will provide an interface. And
 
 ## Testable
 The business rules can be tested without the UI, Database, Web Server. So we will focus unit test the service layer but this layer depends on the storage layer, which means this layer needs the storage layer for testing. So we must make a mockup of the storage, based on the interface defined before.
+
+
+## Developers guide
+
+### How to generate migrate file and runs database migrations
+This is a step to generate a migration file for making database schema updates.
+We need to execute via docker, generate migration file, put SQL command and run migrate
+1. `docker-compose exec api-shop sh`
+2. `bee generate migration client -fields="name:string,api_key:string,created_at:datetime,updated_at:datetime"`
+3. Find your generated file in `database/migrations` and recheck your SQL command and you can change it
+4. Final step run the migrate file by `bee migrate -driver=$DRIVER -conn=$SQLCONN`

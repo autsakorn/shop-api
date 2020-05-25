@@ -9,6 +9,7 @@ import (
 	"shop-api/storage"
 	"shop-api/types"
 	"shop-api/utils"
+	"strconv"
 
 	"github.com/jinzhu/copier"
 )
@@ -94,6 +95,9 @@ func (s CategoryService) GetAll(
 	offset int64,
 	limit int64,
 ) (results []types.OutputCategory, err error) {
+	if status, ok := query["Status"]; ok {
+		query["Status"] = strconv.Itoa(utils.IndexOf(status, models.CategoryStatus))
+	}
 	ormer := s.Orm.NewOrms()
 	categories, err := s.Storage.Category.GetAll(ormer, query, order, offset, limit)
 	copier.Copy(&results, &categories)
@@ -102,16 +106,22 @@ func (s CategoryService) GetAll(
 
 // UpdateByID service for update category by ID and InputUpdateCategory
 func (s CategoryService) UpdateByID(ctx context.Context, id int64, input *types.InputUpdateCategory) (err error) {
-	errorMessage := "Not found" // Init error message
+	errorMessageInvalidStatus := "Please enter valid status, Must be either [Active|Inactive]" // Init error message
+	errorMessage := "Not found"                                                                // Init error message
+
+	// Validate status
+	indexStatus := int32(utils.IndexOf(input.Status, models.CategoryStatus)) // Get index from status(string)
+	if indexStatus < 0 {                                                     // Not found index from status(string)
+		err = errors.New(errorMessageInvalidStatus)
+		return
+	}
+
 	ormer := s.Orm.NewOrms()
 	category, err := s.Storage.Category.GetByID(ormer, id)
-	m := models.Category{
-		ID:        id,
-		Name:      input.Name,
-		Detail:    input.Detail,
-		CreatedAt: category.CreatedAt,
-	}
-	num, err := s.Storage.Category.UpdateByID(ormer, &m)
+
+	copier.Copy(&category, &input) // Map input object to model object
+	category.Status = indexStatus  // Set value status
+	num, err := s.Storage.Category.UpdateByID(ormer, &category)
 	if num < 1 || err != nil {
 		err = errors.New(errorMessage)
 	}

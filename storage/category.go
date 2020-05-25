@@ -53,7 +53,7 @@ func (s CategoryStorage) GetAll(
 		qs = qs.Filter(k, v)
 	}
 	qs = qs.OrderBy(order...)
-	_, err = qs.All(&result)
+	_, err = qs.RelatedSel().All(&result)
 	return
 }
 

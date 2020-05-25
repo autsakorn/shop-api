@@ -16,11 +16,13 @@ var afterExecMiddleware = func(ctx *context.Context) {
 	}
 }
 
+var corsOption = &cors.Options{
+	AllowAllOrigins:  true,
+	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	AllowCredentials: true,
+}
+
 func init() {
-	beego.InsertFilter("*", beego.BeforeStatic, cors.Allow(&cors.Options{
-		AllowAllOrigins:  true,
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowCredentials: true,
-	}), true)
+	beego.InsertFilter("*", beego.BeforeStatic, cors.Allow(corsOption), true)
 	beego.InsertFilter("*", beego.AfterExec, afterExecMiddleware, false)
 }

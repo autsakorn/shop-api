@@ -25,7 +25,7 @@ func (m *Product_20200515_161334) Up() {
 		name varchar(255) NOT NULL,
 		detail TEXT NULL,
 		category_id integer DEFAULT NULL,
-		quantity integer DEFAULT NULL,
+		stock integer DEFAULT NULL,
 		brand varchar(100) NULL,
 		model varchar(255) NULL,
 		price numeric NOT NULL,

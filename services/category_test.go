@@ -50,9 +50,8 @@ func TestCategoryService_Add(t *testing.T) {
 		args         args
 		mockStatus   int32
 		mockResponse mockResponse
-
-		wantID  int64
-		wantErr bool
+		wantID       int64
+		wantErr      bool
 	}{
 		{
 			"Base case",
@@ -129,7 +128,6 @@ func TestCategoryService_Add(t *testing.T) {
 				t.Errorf("CategoryService.Add() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-
 			if gotID != tt.wantID {
 				t.Errorf("CategoryService.Add() gotID = %v, want %v", gotID, tt.wantID)
 			}
@@ -312,7 +310,7 @@ func TestCategoryService_GetAll(t *testing.T) {
 		{
 			"Status Inactive",
 			fields{Storage: storage.Storage{}},
-			args{query: map[string]string{"Name": "Mas"}},
+			args{query: map[string]string{"Name": "Mas", "Status": "Inactive"}},
 			mockResponse{
 				[]models.Category{
 					{Name: "Name", Detail: "Detail", Status: 0},
@@ -372,20 +370,31 @@ func TestCategoryService_UpdateByID(t *testing.T) {
 		name         string
 		fields       fields
 		args         args
+		mockStatus   int32
 		mockResponse mockResponse
 		wantErr      bool
 	}{
 		{
 			"Base case",
 			fields{Storage: storage.Storage{}},
-			args{id: 1, category: &types.InputUpdateCategory{Name: "Name"}},
-			mockResponse{num: 1, result: models.Category{CreatedAt: time.Now()}, err: nil},
+			args{id: 1, category: &types.InputUpdateCategory{Name: "Name", Status: "Active"}},
+			1,
+			mockResponse{num: 1, result: models.Category{ID: 1, CreatedAt: time.Now()}, err: nil},
 			false,
+		},
+		{
+			"Invalid status",
+			fields{Storage: storage.Storage{}},
+			args{id: 1, category: &types.InputUpdateCategory{Name: "Name", Status: "active"}},
+			1,
+			mockResponse{num: 1, result: models.Category{ID: 1, CreatedAt: time.Now()}, err: nil},
+			true,
 		},
 		{
 			"Not found ID",
 			fields{Storage: storage.Storage{}},
-			args{id: 2, category: &types.InputUpdateCategory{Name: "Name"}},
+			args{id: 2, category: &types.InputUpdateCategory{Name: "Name", Status: "Active"}},
+			1,
 			mockResponse{num: 0, result: models.Category{}, err: nil},
 			true,
 		},
@@ -408,8 +417,9 @@ func TestCategoryService_UpdateByID(t *testing.T) {
 					ormer,
 					&models.Category{
 						Name:      tt.args.category.Name,
-						ID:        tt.args.id,
+						ID:        tt.mockResponse.result.ID,
 						CreatedAt: tt.mockResponse.result.CreatedAt,
+						Status:    tt.mockStatus,
 					}).
 				AnyTimes().
 				Return(tt.mockResponse.num, tt.mockResponse.err)
