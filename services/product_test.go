@@ -353,7 +353,7 @@ func TestProductService_UpdateByID(t *testing.T) {
 						Model:     tt.args.product.Model,
 						Cost:      tt.args.product.Cost,
 						Price:     tt.args.product.Price,
-						Quantity:  tt.args.product.Quantity,
+						Stock:     tt.args.product.Stock,
 						CreatedAt: tt.thirdPartyResponse.product.CreatedAt,
 						Category:  &models.Category{ID: tt.args.product.Category.ID},
 					}).

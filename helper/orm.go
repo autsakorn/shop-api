@@ -21,7 +21,7 @@ func NewOrm() Orm {
 
 // NewOrms method create ormer and return
 func (o Orm) NewOrms() OrmerInterface {
-	ormer := newOrmer()
+	ormer := NewOrmer()
 	return ormer
 }
 
@@ -43,7 +43,8 @@ type Ormer struct {
 	orm.Ormer
 }
 
-func newOrmer() Ormer {
+// NewOrmer func return ormer
+func NewOrmer() Ormer {
 	ormer := orm.NewOrm()
 	return Ormer{ormer}
 }

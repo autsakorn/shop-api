@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Sony PS4 Slim Console (1TB)",
+    "detail": "Brand New stock. Local stock with one year warranty by Sony. \nIncludes a new slim 1TB PlayStation4 system, a matching DualShock 4 Wireless Controller.\nInclude 3 best selling games- God of war, Detriot become human, last of us\nEnglish/Regional language setting/menu selectable\nNo region lock. Asia, US, Europe any game titles all playable\nPlay online with your friends, get free games, save games online and more with PlayStation Plus membership (sold separately\nConnect with your friends to broadcast and celebrate your epic moments at the press of the Share button to Twitch, YouTube, Facebook and Twitter",
+    "category": "Video Games",
+    "stock": 100,
+    "brand": "Sony",
+    "model": "Slim",
+    "price": 16000,
+    "cost": 9999.99
+  },
+  {
+    "name": "Nintendo Switch Lite - Zacian and Zamazenta Edition",
+    "detail": "Introducing the Nintendo Switch Lite Zacian and Zamazenta Edition system, a new addition to the Nintendo Switch family to be launched on Nov. 8.",
+    "category": "Video Games",
+    "stock": 50,
+    "brand": "Nintendo Switch",
+    "model": "Nintendo Switch",
+    "price": 8256.92,
+    "cost": 6256.92
+  },
+  {
+    "name": "Summer Fashion Man Lapel Polo Shirt Cotton Man Short Sleeve Tennis Shirt",
+    "detail": "100% Brand New and high quality \nFashion,simple and breathable \n21 Color:\nPurple/White/Yellow/Black/Beige/Pink/Blue/Orange/Red/Gray/Sky blue/Dark gray/Light purple/Light blue/Denim Blue/Rose/Green/Army green/Wine red/Fruit Green/Navy Blue\nPleave leave message to tell the color!",
+    "category": "Men's Wear",
+    "stock": 10,
+    "brand": "No Brand",
+    "model": "Regular Fit",
+    "price": 399,
+    "cost": 200
+  },
+  {
+    "name": "Summer Fashion 2 Man Lapel Polo Shirt Cotton Man Short Sleeve Tennis Shirt",
+    "detail": "100% Brand New and high quality \nFashion,simple and breathable \n21 Color:\nPurple/White/Yellow/Black/Beige/Pink/Blue/Orange/Red/Gray/Sky blue/Dark gray/Light purple/Light blue/Denim Blue/Rose/Green/Army green/Wine red/Fruit Green/Navy Blue\nPleave leave message to tell the color!",
+    "category": "Men's Wear",
+    "stock": 10,
+    "brand": "No Brand",
+    "model": "Regular Fit",
+    "price": 299,
+    "cost": 150
+  }
+]

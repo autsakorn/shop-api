@@ -383,7 +383,7 @@
                     "type": "number",
                     "format": "double"
                 },
-                "quantity": {
+                "stock": {
                     "type": "integer",
                     "format": "int64"
                 }
@@ -397,6 +397,9 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
@@ -428,7 +431,7 @@
                     "type": "number",
                     "format": "double"
                 },
-                "quantity": {
+                "stock": {
                     "type": "integer",
                     "format": "int64"
                 }
@@ -463,10 +466,6 @@
                 "brand": {
                     "type": "string"
                 },
-                "cost": {
-                    "type": "number",
-                    "format": "double"
-                },
                 "detail": {
                     "type": "string"
                 },
@@ -484,7 +483,7 @@
                     "type": "number",
                     "format": "double"
                 },
-                "quantity": {
+                "stock": {
                     "type": "integer",
                     "format": "int64"
                 }

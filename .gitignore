@@ -15,7 +15,7 @@ commentsRouter__________*
 coverage.html
 coverage/
 shop-api
-lastupdate.tmp
+*.tmp
 # Dependency directories (remove the comment below to include it)
 # vendor/
 

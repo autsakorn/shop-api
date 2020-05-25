@@ -256,7 +256,7 @@ definitions:
       price:
         type: number
         format: double
-      quantity:
+      stock:
         type: integer
         format: int64
   types.InputUpdateCategory:
@@ -266,6 +266,8 @@ definitions:
       detail:
         type: string
       name:
+        type: string
+      status:
         type: string
   types.InputUpdateProduct:
     title: InputUpdateProduct
@@ -287,7 +289,7 @@ definitions:
       price:
         type: number
         format: double
-      quantity:
+      stock:
         type: integer
         format: int64
   types.OutputCategory:
@@ -311,9 +313,6 @@ definitions:
         $ref: '#/definitions/types.OutputCategory'
       brand:
         type: string
-      cost:
-        type: number
-        format: double
       detail:
         type: string
       id:
@@ -326,7 +325,7 @@ definitions:
       price:
         type: number
         format: double
-      quantity:
+      stock:
         type: integer
         format: int64
   types.productCategory:
