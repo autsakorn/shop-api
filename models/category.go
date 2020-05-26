@@ -16,6 +16,10 @@ type Category struct {
 	UpdatedAt time.Time `orm:"column(updated_at);type(datetime)"`
 }
 
+func init() {
+	orm.RegisterModel(new(Category))
+}
+
 var invalid string = "Invalid"
 
 // CategoryStatus define category status
@@ -27,8 +31,4 @@ func (category *Category) StatusRes() string {
 		return invalid
 	}
 	return CategoryStatus[category.Status]
-}
-
-func init() {
-	orm.RegisterModel(new(Category))
 }
