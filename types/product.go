@@ -12,7 +12,7 @@ type InputAddProduct struct {
 	Detail   string          `json:"detail"`
 	Brand    string          `json:"brand"`
 	Model    string          `json:"model"`
-	Quantity int             `json:"quantity"`
+	Stock    int             `json:"stock"`
 	Cost     float64         `json:"cost"`
 	Category productCategory `json:"Category"`
 }
@@ -24,7 +24,7 @@ type InputUpdateProduct struct {
 	Detail   string          `json:"detail"`
 	Brand    string          `json:"brand"`
 	Model    string          `json:"model"`
-	Quantity int             `json:"quantity"`
+	Stock    int             `json:"stock"`
 	Cost     float64         `json:"cost"`
 	Category productCategory `json:"Category"`
 }
@@ -37,7 +37,6 @@ type OutputProduct struct {
 	Detail   string         `json:"detail"`
 	Brand    string         `json:"brand"`
 	Model    string         `json:"model"`
-	Quantity int            `json:"quantity"`
-	Cost     float64        `json:"cost"`
+	Stock    int            `json:"stock"`
 	Category OutputCategory `json:"Category"`
 }

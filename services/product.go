@@ -35,22 +35,13 @@ func NewProductService() (ps ProductService) {
 }
 
 // Add service for add a new product
-func (ps ProductService) Add(ctx context.Context, product types.InputAddProduct) (id int64, err error) {
-	inputModel := models.Product{
-		Name:     product.Name,
-		Detail:   product.Detail,
-		Brand:    product.Brand,
-		Model:    product.Model,
-		Quantity: product.Quantity,
-		Price:    product.Price,
-		Cost:     product.Cost,
-		Category: &models.Category{
-			ID: product.Category.ID,
-		},
-	}
-	ormer := ps.Orm.NewOrms()                            // Declare ormer
-	ormer.BeginTx(ctx, &sql.TxOptions{})                 // Begin transaction
-	id, err = ps.Storage.Product.Add(ormer, &inputModel) // Execute method Add
+func (ps ProductService) Add(ctx context.Context, input types.InputAddProduct) (id int64, err error) {
+	var product = models.Product{} // Init variable category
+	copier.Copy(&product, &input)  // Map data input to model
+
+	ormer := ps.Orm.NewOrms()                         // Declare ormer
+	ormer.BeginTx(ctx, &sql.TxOptions{})              // Begin transaction
+	id, err = ps.Storage.Product.Add(ormer, &product) // Execute method Add
 	if id < 1 || err != nil {
 		ormer.Rollback()
 		return
@@ -99,24 +90,12 @@ func (ps ProductService) GetAll(
 }
 
 // UpdateByID service for update product by ID
-func (ps ProductService) UpdateByID(ctx context.Context, id int64, product *types.InputUpdateProduct) (err error) {
+func (ps ProductService) UpdateByID(ctx context.Context, id int64, input *types.InputUpdateProduct) (err error) {
 	ormer := ps.Orm.NewOrms()
-	dataProduct, err := ps.Storage.Product.GetByID(ormer, id)
-	m := models.Product{
-		ID:        dataProduct.ID,
-		Name:      product.Name,
-		Detail:    product.Detail,
-		Brand:     product.Brand,
-		Model:     product.Model,
-		Cost:      product.Cost,
-		Price:     product.Price,
-		Quantity:  product.Quantity,
-		CreatedAt: dataProduct.CreatedAt,
-		Category: &models.Category{
-			ID: product.Category.ID,
-		},
-	}
-	num, err := ps.Storage.Product.UpdateByID(ormer, &m)
+	product, err := ps.Storage.Product.GetByID(ormer, id)
+	copier.Copy(&product, &input) // Map data input to model
+
+	num, err := ps.Storage.Product.UpdateByID(ormer, &product)
 	if num < 1 {
 		errorMessage := "Not Found"
 		err = errors.New(errorMessage)

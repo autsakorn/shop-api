@@ -15,7 +15,7 @@ type Product struct {
 	Model     string    `orm:"column(model);size(255)"`
 	CreatedAt time.Time `orm:"column(created_at);type(datetime)"`
 	UpdatedAt time.Time `orm:"column(updated_at);type(datetime)"`
-	Quantity  int       `orm:"column(quantity)"`
+	Stock     int       `orm:"column(stock)"`
 	Price     float64   `orm:"column(price)"`
 	Cost      float64   `orm:"column(cost)"`
 	Category  *Category `orm:"rel(fk);null"`

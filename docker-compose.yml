@@ -8,11 +8,11 @@ services:
     networks:
       - api-shop
     environment:
-      SWAGGER_JSON: 'http://localhost:8081/swagger/swagger.json'
+      SWAGGER_JSON: 'http://localhost:8082/swagger/swagger.json'
   api-shop:
     build: .
     ports:
-      - 8081:8081
+      - 8082:8082
       - 8088:8088
     networks:
       - api-shop

@@ -13,7 +13,8 @@ type Ormer struct {
 	orm.Ormer
 }
 
-func newOrmer() Ormer {
+// NewOrmer func return ormer object
+func NewOrmer() Ormer {
 	return Ormer{}
 }
 
@@ -35,9 +36,14 @@ func (ormer Ormer) Rollback() error {
 // OrmMock defines properties empty
 type OrmMock struct{}
 
+// NewOrmMock return OrmMock object
+func NewOrmMock() (ormMock OrmMock) {
+	return
+}
+
 // NewOrms method create new ormer
 func (o OrmMock) NewOrms() helper.OrmerInterface {
-	return newOrmer()
+	return NewOrmer()
 }
 
 // RegisterDataBase mock beego RegisterDataBase return nil

@@ -18,7 +18,7 @@ func TransformQueryGetAll(queryStr string) (query map[string]string, err error) 
 				return
 			}
 			// kv[0], rewrite dot-notation to Object__Attribute
-			k, v := strings.Replace(kv[0], ".", "__", -1), kv[1]
+			k, v := strings.Replace(kv[0], ".", "__", -1), strings.Trim(kv[1], " ")
 			query[k] = v
 		}
 	}

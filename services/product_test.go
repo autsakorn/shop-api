@@ -71,14 +71,16 @@ func TestProductService_Add(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 			ctx := context.Background()
 
+			// Mock method storage
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := productmock.NewMockProduct(ctrl)
-			mackProduct.EXPECT().
+			mockProduct := productmock.NewMockProduct(ctrl)
+			mockProduct.EXPECT().
 				Add(
 					ormer,
 					&models.Product{
@@ -88,7 +90,9 @@ func TestProductService_Add(t *testing.T) {
 					}).
 				AnyTimes().
 				Return(tt.mockResponse.id, tt.mockResponse.err)
-			tt.fields.Storage.Product = mackProduct
+
+			// Set properties service
+			tt.fields.Storage.Product = mockProduct
 
 			ps := ProductService{
 				Storage: tt.fields.Storage,
@@ -129,14 +133,16 @@ func TestProductService_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 			ctx := context.Background()
 
+			// Mock method storage
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := productmock.NewMockProduct(ctrl)
-			mackProduct.EXPECT().
+			mockProduct := productmock.NewMockProduct(ctrl)
+			mockProduct.EXPECT().
 				Delete(
 					ormer,
 					&models.Product{
@@ -144,7 +150,9 @@ func TestProductService_Delete(t *testing.T) {
 					}).
 				AnyTimes().
 				Return(tt.mockResponse.num, tt.mockResponse.err)
-			tt.fields.Storage.Product = mackProduct
+
+			// Set properties service
+			tt.fields.Storage.Product = mockProduct
 
 			ps := ProductService{
 				Storage: tt.fields.Storage,
@@ -205,18 +213,22 @@ func TestProductService_GetByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 			ctx := context.Background()
 
+			// Mock method storage
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := productmock.NewMockProduct(ctrl)
-			mackProduct.EXPECT().
+			mockProduct := productmock.NewMockProduct(ctrl)
+			mockProduct.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
 				Return(tt.mockResponse.product, tt.mockResponse.err)
-			tt.fields.Storage.Product = mackProduct
+
+			// Set properties service
+			tt.fields.Storage.Product = mockProduct
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 				Orm:     ormMocked,
@@ -266,18 +278,22 @@ func TestProductService_GetAll(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 			ctx := context.Background()
 
+			// Mock method storage
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := productmock.NewMockProduct(ctrl)
-			mackProduct.EXPECT().
+			mockProduct := productmock.NewMockProduct(ctrl)
+			mockProduct.EXPECT().
 				GetAll(ormer, tt.args.query, tt.args.order, tt.args.offset, tt.args.limit).
 				AnyTimes().
 				Return(tt.mockResponse.result, tt.mockResponse.err)
-			tt.fields.Storage.Product = mackProduct
+
+			// Set properties service
+			tt.fields.Storage.Product = mockProduct
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 				Orm:     ormMocked,
@@ -331,18 +347,20 @@ func TestProductService_UpdateByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Mock ormer
 			ormMocked := ormmock.OrmMock{}
 			ormer := ormMocked.NewOrms()
 			ctx := context.Background()
 
+			// Mock method storage
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-			mackProduct := productmock.NewMockProduct(ctrl)
-			mackProduct.EXPECT().
+			mockProduct := productmock.NewMockProduct(ctrl)
+			mockProduct.EXPECT().
 				GetByID(ormer, tt.args.id).
 				AnyTimes().
 				Return(tt.thirdPartyResponse.product, tt.thirdPartyResponse.err)
-			mackProduct.EXPECT().
+			mockProduct.EXPECT().
 				UpdateByID(
 					ormer,
 					&models.Product{
@@ -353,13 +371,15 @@ func TestProductService_UpdateByID(t *testing.T) {
 						Model:     tt.args.product.Model,
 						Cost:      tt.args.product.Cost,
 						Price:     tt.args.product.Price,
-						Quantity:  tt.args.product.Quantity,
+						Stock:     tt.args.product.Stock,
 						CreatedAt: tt.thirdPartyResponse.product.CreatedAt,
 						Category:  &models.Category{ID: tt.args.product.Category.ID},
 					}).
 				AnyTimes().
 				Return(tt.thirdPartyResponse.num, tt.thirdPartyResponse.err)
-			tt.fields.Storage.Product = mackProduct
+
+			// Set properties service
+			tt.fields.Storage.Product = mockProduct
 			ps := ProductService{
 				Storage: tt.fields.Storage,
 				Orm:     ormMocked,

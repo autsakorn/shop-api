@@ -11,6 +11,7 @@ type InputAddCategory struct {
 type InputUpdateCategory struct {
 	Name   string `json:"name"`
 	Detail string `json:"detail"`
+	Status string `json:"status"`
 }
 
 // OutputCategory defines properties output category

@@ -28,6 +28,12 @@ func TestTransformQueryGetAll(t *testing.T) {
 			false,
 		},
 		{
+			"Key with dot and value with space, Object__Attribute: Value  ",
+			args{"Object.Attribute: Value  "},
+			map[string]string{"Object__Attribute": "Value"},
+			false,
+		},
+		{
 			"Error case",
 			args{"Attribute:Value,Detail"},
 			map[string]string{"Attribute": "Value"},
