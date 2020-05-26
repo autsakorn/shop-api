@@ -32,7 +32,7 @@ If you need to roll back the database
 You can run unit test by the command
 - `go test ./services ./models ./utils -cover`
   
-If you want to see test coverage detail 3 step
+If you want to see test coverage detail 3 step (Note need to create directory coverage `mkdir coverage`)
 1. `go test -coverprofile=coverage/cover.out ./services ./models ./utils -cover`
 2. `go tool cover -html=coverage/cover.out -o coverage/index.html`
 3. Open your browser and go to http://localhost:8082/coverage
