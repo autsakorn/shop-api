@@ -51,7 +51,7 @@ func (s ProductStorage) GetAll(
 		qs = qs.Filter(k, v)
 	}
 	qs = qs.OrderBy(order...)
-	_, err = qs.RelatedSel().All(&result)
+	_, err = qs.RelatedSel().Limit(limit, offset).All(&result)
 	return
 }
 
