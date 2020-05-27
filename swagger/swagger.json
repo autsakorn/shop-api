@@ -11,6 +11,170 @@
         "http"
     ],
     "paths": {
+        "/brand/": {
+            "get": {
+                "tags": [
+                    "brand"
+                ],
+                "description": "get Brand",
+                "operationId": "BrandController.Get All",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sortby",
+                        "description": "Sorted-by fields. e.g. col1,col2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "order",
+                        "description": "Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limit the size of result set. Must be an integer",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Start position of result set. Must be an integer",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/types.OutputBrand"
+                        }
+                    },
+                    "400": {
+                        "description": "{message: \"string\"}"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "brand"
+                ],
+                "description": "create Brand",
+                "operationId": "BrandController.Post",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Brand content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Brand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} ID"
+                    },
+                    "400": {
+                        "description": "{message: \"string\"}"
+                    }
+                }
+            }
+        },
+        "/brand/{id}": {
+            "get": {
+                "tags": [
+                    "brand"
+                ],
+                "description": "get Brand by id",
+                "operationId": "BrandController.Get One",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/types.OutputBrand"
+                        }
+                    },
+                    "400": {
+                        "description": "{message: \"string\"}"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "brand"
+                ],
+                "description": "update the Brand",
+                "operationId": "BrandController.Put",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The id you want to update",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Brand content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.InputUpdateBrand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "{message: \"string\"}"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "brand"
+                ],
+                "description": "delete the Brand",
+                "operationId": "BrandController.Delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The id you want to delete",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "{message: \"string\"}"
+                    }
+                }
+            }
+        },
         "/category/": {
             "get": {
                 "tags": [
@@ -366,6 +530,30 @@
         }
     },
     "definitions": {
+        "models.Brand": {
+            "title": "Brand",
+            "type": "object",
+            "properties": {
+                "CreatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "ID": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Slug": {
+                    "type": "string"
+                },
+                "Title": {
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            }
+        },
         "types.InputAddCategory": {
             "title": "InputAddCategory",
             "type": "object",
@@ -414,6 +602,18 @@
                 }
             }
         },
+        "types.InputUpdateBrand": {
+            "title": "InputUpdateBrand",
+            "type": "object",
+            "properties": {
+                "slug": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "types.InputUpdateCategory": {
             "title": "InputUpdateCategory",
             "type": "object",
@@ -459,6 +659,22 @@
                 "stock": {
                     "type": "integer",
                     "format": "int64"
+                }
+            }
+        },
+        "types.OutputBrand": {
+            "title": "OutputBrand",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -534,6 +750,10 @@
         }
     },
     "tags": [
+        {
+            "name": "brand",
+            "description": "BrandController operations for Brand\n"
+        },
         {
             "name": "category",
             "description": "CategoryController operations for Category\n"

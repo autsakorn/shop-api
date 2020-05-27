@@ -15,9 +15,17 @@ import (
 )
 
 func init() {
+	brandService := services.NewBrandService()
 	productService := services.NewProductService()
 	categoryService := services.NewCategoryService()
 	ns := beego.NewNamespace("/v1",
+		beego.NSNamespace("/brand",
+			beego.NSInclude(
+				&controllers.BrandController{
+					BrandService: brandService,
+				},
+			),
+		),
 		beego.NSNamespace("/category",
 			beego.NSInclude(
 				&controllers.CategoryController{
