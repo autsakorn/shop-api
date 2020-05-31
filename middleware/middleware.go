@@ -40,5 +40,6 @@ var auth = func(ctx *context.Context) {
 func init() {
 	beego.InsertFilter("*", beego.BeforeStatic, cors.Allow(corsOption), true)
 	beego.InsertFilter("/v1/product/*", beego.BeforeRouter, auth, false)
+	beego.InsertFilter("/v1/request/*", beego.BeforeRouter, auth, false)
 	beego.InsertFilter("*", beego.AfterExec, afterExecMiddleware, false)
 }

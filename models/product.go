@@ -18,7 +18,7 @@ type Product struct {
 	Stock     int       `orm:"column(stock)"`
 	Price     float64   `orm:"column(price)"`
 	Cost      float64   `orm:"column(cost)"`
-	Category  *Category `orm:"rel(fk);null"`
+	Category  *Category `orm:"column(category_id);rel(fk);null"`
 }
 
 func init() {

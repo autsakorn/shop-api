@@ -7,6 +7,7 @@ type Storage struct {
 	Category Category
 	Product  Product
 	Client   Client
+	Request  Request
 }
 
 // NewStorage return out storage
@@ -15,5 +16,6 @@ func NewStorage() (storage Storage) {
 	storage.Category = NewCategoryStorage()
 	storage.Product = NewProductStorage()
 	storage.Client = NewClientStorage()
+	storage.Request = NewRequestStorage()
 	return
 }
