@@ -10,6 +10,7 @@ import (
 // Brand represents all possible actions available to deal with data
 type Brand interface {
 	Add(orm.Ormer, *models.Brand) (int64, error)
+	GetByTitle(orm.Ormer, string) (models.Brand, error)
 	Delete(orm.Ormer, *models.Brand) (int64, error)
 	GetAll(orm.Ormer, map[string]string, []string, int64, int64) ([]models.Brand, error)
 	GetByID(orm.Ormer, int64) (models.Brand, error)
@@ -60,6 +61,12 @@ func (s BrandStorage) GetAll(
 // GetByID method retrieve all Brand match by ID
 func (s BrandStorage) GetByID(ormer orm.Ormer, id int64) (result models.Brand, err error) {
 	err = ormer.QueryTable(new(models.Brand)).Filter("id", id).RelatedSel().One(&result)
+	return
+}
+
+// GetByTitle method retrieve category match by title
+func (s BrandStorage) GetByTitle(ormer orm.Ormer, title string) (result models.Brand, err error) {
+	err = ormer.QueryTable(new(models.Brand)).Filter("title", title).RelatedSel().One(&result)
 	return
 }
 

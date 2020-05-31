@@ -527,6 +527,175 @@
                     }
                 ]
             }
+        },
+        "/request/": {
+            "get": {
+                "tags": [
+                    "request"
+                ],
+                "description": "get Request",
+                "operationId": "RequestController.Get All",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "description": "Filter. e.g. col1:v1,col2:v2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "fields",
+                        "description": "Fields returned. e.g. col1,col2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "sortby",
+                        "description": "Sorted-by fields. e.g. col1,col2 ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "request",
+                        "description": "Request corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ...",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limit the size of result set. Must be an integer",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "description": "Start position of result set. Must be an integer",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.Request"
+                        }
+                    },
+                    "403": {
+                        "description": ""
+                    }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "request"
+                ],
+                "description": "create Request",
+                "operationId": "RequestController.Post",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Request content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.InputAddRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "{int} types.OutputRequest"
+                    },
+                    "403": {
+                        "description": "body is empty"
+                    }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
+            }
+        },
+        "/request/{id}": {
+            "get": {
+                "tags": [
+                    "request"
+                ],
+                "description": "get Request by id",
+                "operationId": "RequestController.Get One",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The key for staticblock",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/types.OutputAddRequest"
+                        }
+                    },
+                    "403": {
+                        "description": ":id is empty"
+                    }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "request"
+                ],
+                "description": "update the Request",
+                "operationId": "RequestController.Put",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "The id you want to update",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "body for Request content",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.InputUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/types.OutputRequest"
+                        }
+                    },
+                    "403": {
+                        "description": ":id is not int"
+                    }
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
+            }
         }
     },
     "definitions": {
@@ -543,6 +712,87 @@
                     "format": "int64"
                 },
                 "Slug": {
+                    "type": "string"
+                },
+                "Title": {
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            }
+        },
+        "models.Category": {
+            "title": "Category",
+            "type": "object",
+            "properties": {
+                "CreatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Detail": {
+                    "type": "string"
+                },
+                "ID": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Status": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "UpdatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            }
+        },
+        "models.Request": {
+            "title": "Request",
+            "type": "object",
+            "properties": {
+                "Brand": {
+                    "$ref": "#/definitions/models.Brand"
+                },
+                "Category": {
+                    "$ref": "#/definitions/models.Category"
+                },
+                "Country": {
+                    "type": "string"
+                },
+                "CreatedAt": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "DueDate": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "ID": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "Price": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "Remark": {
+                    "type": "string"
+                },
+                "RequirePackage": {
+                    "type": "string"
+                },
+                "ShippingAddress": {
+                    "type": "string"
+                },
+                "ShippingMethod": {
                     "type": "string"
                 },
                 "Title": {
@@ -599,6 +849,47 @@
                 "stock": {
                     "type": "integer",
                     "format": "int64"
+                }
+            }
+        },
+        "types.InputAddRequest": {
+            "title": "InputAddRequest",
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dueDate": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "requirePackage": {
+                    "type": "string"
+                },
+                "shippingAddress": {
+                    "type": "string"
+                },
+                "shippingMethod": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -661,6 +952,51 @@
                     "format": "int64"
                 }
             }
+        },
+        "types.InputUpdateRequest": {
+            "title": "InputUpdateRequest",
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dueDate": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "requirePackage": {
+                    "type": "string"
+                },
+                "shippingAddress": {
+                    "type": "string"
+                },
+                "shippingMethod": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.OutputAddRequest": {
+            "title": "OutputAddRequest",
+            "type": "object"
         },
         "types.OutputBrand": {
             "title": "OutputBrand",
@@ -730,6 +1066,51 @@
                 }
             }
         },
+        "types.OutputRequest": {
+            "title": "OutputRequest",
+            "type": "object",
+            "properties": {
+                "Brand": {
+                    "$ref": "#/definitions/types.OutputBrand"
+                },
+                "Category": {
+                    "$ref": "#/definitions/types.OutputCategory"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dueDate": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "double"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "requirePackage": {
+                    "type": "string"
+                },
+                "shippingAddress": {
+                    "type": "string"
+                },
+                "shippingMethod": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "types.productCategory": {
             "title": "productCategory",
             "type": "object",
@@ -761,6 +1142,10 @@
         {
             "name": "product",
             "description": "ProductController operations for Product\n"
+        },
+        {
+            "name": "request",
+            "description": "RequestController operations for Request\n"
         },
         {
             "name": "error",
