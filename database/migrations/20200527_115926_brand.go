@@ -20,7 +20,7 @@ func init() {
 // Up Run the migrations
 func (m *Brand_20200527_115926) Up() {
 	// use m.SQL("CREATE TABLE ...") to make schema update
-	m.SQL("CREATE TABLE brand(id serial primary key,title char(255) NOT NULL,slug TEXT NOT NULL,created_at TIMESTAMP WITH TIME ZONE NOT NULL,updated_at TIMESTAMP WITH TIME ZONE NOT NULL)")
+	m.SQL("CREATE TABLE brand(id serial primary key,title varchar(255) NOT NULL,slug TEXT NOT NULL,created_at TIMESTAMP WITH TIME ZONE NOT NULL,updated_at TIMESTAMP WITH TIME ZONE NOT NULL)")
 }
 
 // Down Reverse the migrations

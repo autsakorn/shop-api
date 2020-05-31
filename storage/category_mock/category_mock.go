@@ -94,6 +94,21 @@ func (mr *MockCategoryMockRecorder) GetByID(arg0, arg1 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockCategory)(nil).GetByID), arg0, arg1)
 }
 
+// GetByName mocks base method
+func (m *MockCategory) GetByName(arg0 orm.Ormer, arg1 string) (models.Category, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByName", arg0, arg1)
+	ret0, _ := ret[0].(models.Category)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByName indicates an expected call of GetByName
+func (mr *MockCategoryMockRecorder) GetByName(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByName", reflect.TypeOf((*MockCategory)(nil).GetByName), arg0, arg1)
+}
+
 // UpdateByID mocks base method
 func (m *MockCategory) UpdateByID(arg0 orm.Ormer, arg1 *models.Category) (int64, error) {
 	m.ctrl.T.Helper()

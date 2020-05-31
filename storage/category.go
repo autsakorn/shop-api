@@ -13,6 +13,7 @@ type Category interface {
 	Delete(orm.Ormer, *models.Category) (int64, error)
 	GetAll(orm.Ormer, map[string]string, []string, int64, int64) ([]models.Category, error)
 	GetByID(orm.Ormer, int64) (models.Category, error)
+	GetByName(orm.Ormer, string) (models.Category, error)
 	UpdateByID(orm.Ormer, *models.Category) (int64, error)
 }
 
@@ -60,6 +61,12 @@ func (s CategoryStorage) GetAll(
 // GetByID method retrieve all Category match by ID
 func (s CategoryStorage) GetByID(ormer orm.Ormer, id int64) (result models.Category, err error) {
 	err = ormer.QueryTable(new(models.Category)).Filter("id", id).RelatedSel().One(&result)
+	return
+}
+
+// GetByName method retrieve category match by name
+func (s CategoryStorage) GetByName(ormer orm.Ormer, name string) (result models.Category, err error) {
+	err = ormer.QueryTable(new(models.Category)).Filter("name", name).RelatedSel().One(&result)
 	return
 }
 

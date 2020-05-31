@@ -1,0 +1,1 @@
+/go/src/shop-api/views/order/edit.tpl

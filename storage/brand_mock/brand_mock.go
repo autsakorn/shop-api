@@ -49,6 +49,21 @@ func (mr *MockBrandMockRecorder) Add(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockBrand)(nil).Add), arg0, arg1)
 }
 
+// GetByTitle mocks base method
+func (m *MockBrand) GetByTitle(arg0 orm.Ormer, arg1 string) (models.Brand, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByTitle", arg0, arg1)
+	ret0, _ := ret[0].(models.Brand)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByTitle indicates an expected call of GetByTitle
+func (mr *MockBrandMockRecorder) GetByTitle(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByTitle", reflect.TypeOf((*MockBrand)(nil).GetByTitle), arg0, arg1)
+}
+
 // Delete mocks base method
 func (m *MockBrand) Delete(arg0 orm.Ormer, arg1 *models.Brand) (int64, error) {
 	m.ctrl.T.Helper()
